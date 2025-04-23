@@ -1,4 +1,5 @@
 import Navbar from './components/Navbar'
+import Emulator from './components/Emulator'
 import './App.css'
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <Emulator />
     </>
   )
 }

@@ -5,13 +5,15 @@ const Emulator = () => {
     const { emulator, canvasRef } = useEmulator();
     const [status, setStatus] = useState("Esperando ROM...");
     const [isRunning, setIsRunning] = useState(false);
+    const [speed, setSpeed] = useState(1);
+    const [volume, setVolume] = useState(100);
 
     useEffect(() => {
         if (emulator?.romLoaded && !isRunning) {
             emulator.start();
             setIsRunning(true);
         }
-    }, [emulator?.romLoaded]);
+    }, [emulator, isRunning]);
 
     const handleRomLoad = async (e) => {
         if (!emulator || !e.target.files?.[0]) return;
@@ -60,32 +62,36 @@ const Emulator = () => {
         if (!emulator) return;
 
         if (isRunning) {
-            emulator.pauseGame(); // Usar pauseGame en lugar de stop
+            emulator.pauseGame();
             setIsRunning(false);
             setStatus("Pausado");
         } else {
-            emulator.resumeGame(); // Usar resumeGame en lugar de start
+            emulator.resumeGame();
             setIsRunning(true);
             setStatus("Jugando...");
         }
     };
 
-    const speedEmulation = () => {
-        emulator.setFastForwardMultiplier(1);
+    const handleSpeed = (e) => {
+        const inputSpeed = e.target.value;
+        setSpeed(inputSpeed);
+        emulator.setFastForwardMultiplier(inputSpeed);
     }
 
-    const handleVolume = () => {
-        let volume = document.getElementById("volume").value / 100;
-        emulator.setVolume(volume);
+    const handleVolume = (e) => {
+        const inputVolume = e.target.value;
+        setVolume(inputVolume);
+        emulator.setVolume(inputVolume / 100);
     }
 
     return (
-        <div className="emulator-container">
-            <div className="controls">
-                <label className="rom-upload-btn">
+        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 space-y-4">
+            <div className="controls flex flex-wrap gap-4 bg-gray-800 p-4 rounded-lg shadow-xl w-full max-w-3xl">
+                <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors duration-200 flex items-center">
                     📁 Cargar ROM
                     <input
                         type="file"
+                        className="hidden"
                         accept=".gba, .gbc, .gb"
                         onChange={handleRomLoad}
                         disabled={isRunning}
@@ -94,29 +100,51 @@ const Emulator = () => {
 
                 <button
                     onClick={toggleEmulation}
-                    className={`start-btn ${isRunning ? 'stop' : 'start'}`}
+                    className={`px-6 py-2 rounded-md font-bold transition-all duration-200 ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
+                        }`}
                 >
-                    {isRunning ? "⏸ Pausar" : "▶ Iniciar"}
+                    {isRunning ? "⏸" : "▶"}
                 </button>
-                <button
-                    onClick={speedEmulation}
-                >x2
-                </button>
-                <label className="rom-upload-btn"> Volumen:
-                    <input type="range" onChange={handleVolume} id="volume" step="10" />
-                </label>
+
+                <div className="flex items-center space-x-2 bg-purple-500 px-4 py-2 rounded-md">
+                    <span className="text-sm">⚡ Velocidad</span>
+                    <input
+                        type="range"
+                        onChange={handleSpeed}
+                        id="speed"
+                        min="1"
+                        max="5"
+                        step="1"
+                        value={speed}
+                        className="w-24 accent-blue-500 cursor-pointer"
+                    />
+                </div>
+
+                <div className="flex items-center space-x-2 bg-gray-700 px-4 py-2 rounded-md">
+                    <span className="text-sm">🔊 Volumen</span>
+                    <input
+                        type="range"
+                        onChange={handleVolume}
+                        id="volume"
+                        step="10"
+                        value={volume}
+                        className="w-24 accent-blue-500 cursor-pointer"
+                    />
+                </div>
             </div>
 
-            <div className="status-indicator">
-                <span>{status}</span>
+            <div className="status-indicator bg-gray-800 px-4 py-2 rounded-md text-sm text-gray-300">
+                {status}
             </div>
 
-            <canvas
-                ref={canvasRef}
-                width={240}
-                height={160}
-                className="game-screen"
-            />
+            <div className="relative w-full max-w-4xl aspect-[3/2] overflow-hidden rounded-lg border-2 border-gray-700 shadow-2xl bg-black">
+                <canvas
+                    ref={canvasRef}
+                    width={240}
+                    height={160}
+                    className="absolute top-0 left-0 w-full h-full object-contain"
+                />
+            </div>
         </div>
     );
 };

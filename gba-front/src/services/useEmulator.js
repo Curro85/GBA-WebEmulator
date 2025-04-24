@@ -15,17 +15,11 @@ export const useEmulator = () => {
                 console.log(`mGBA ${Module.version.projectVersion}`);
                 await Module.FSInit();
 
-                // Configuración inicial
-                // Module.setCoreSettings({
-                //     volume: 100,
-                //     fastForwardMultiplier: 1,
+                // Module.addCoreCallbacks({
+                //     romLoaded: (loaded) => {
+                //         Module.romLoaded = loaded;
+                //     }
                 // });
-
-                Module.addCoreCallbacks({
-                    romLoaded: (loaded) => {
-                        Module.romLoaded = loaded;
-                    }
-                });
 
                 setEmulator(Module);
             } catch (error) {

@@ -18,6 +18,10 @@ const Emulator = () => {
     const handleRomLoad = async (e) => {
         if (!emulator || !e.target.files?.[0]) return;
 
+        if(status.includes('Pausado') || status.includes('Jugando...')) {
+            emulator.quitGame();
+        };
+
         try {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -38,11 +42,13 @@ const Emulator = () => {
                 setIsRunning(true);
 
                 if (loadResult) {
-                    setStatus("ROM cargado - Presiona Iniciar");
+                    setStatus("Jugando...");
+                    setIsRunning(true);
                     console.log("ROM cargado correctamente", {
                         romLoaded: true,
                         fileList: emulator.listRoms(),
                         saveList: emulator.listSaves(),
+                        save: emulator.getSave(),
                     });
                 } else {
                     setStatus("Error: ROM no compatible");
@@ -100,8 +106,8 @@ const Emulator = () => {
 
                 <button
                     onClick={toggleEmulation}
-                    className={`px-6 py-2 rounded-md font-bold transition-all duration-200 ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'
-                        }`}
+                    className={`px-6 py-2 rounded-md font-bold transition-all duration-200 
+                        ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
                 >
                     {isRunning ? "⏸" : "▶"}
                 </button>

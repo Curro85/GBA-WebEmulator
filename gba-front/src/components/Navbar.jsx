@@ -1,4 +1,8 @@
+import { useEmulator } from '../services/useEmulator'
+
 function Navbar() {
+  const { emulator } = useEmulator();
+
   return (
     <nav className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center">
       <div className="space-x-4">
@@ -6,6 +10,13 @@ function Navbar() {
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">Play</button>
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">x2</button>
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">Volumen</button>
+        <input 
+        className="bg-amber-50 text-blue-400" 
+        type="text"
+        onFocus={() => emulator.toggleInput(false)}
+        onBlur={() => emulator.toggleInput(true)}
+        placeholder='Hola' 
+        />
       </div>
     </nav>
   )

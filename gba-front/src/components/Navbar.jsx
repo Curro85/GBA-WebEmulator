@@ -1,7 +1,9 @@
-import { useEmulator } from '../context/emulator.context'
+import { useEmulator } from '../context/emulator.context';
+import { useModal } from '../context/modal.context';
 
 function Navbar() {
   const { emulator } = useEmulator();
+  const { openModal } = useModal();
 
   return (
     <nav className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center">
@@ -15,7 +17,7 @@ function Navbar() {
           type="text"
           disabled={!emulator}
           onFocus={() => {
-            emulator.toggleInput(false); 
+            emulator.toggleInput(false);
             emulator.pauseGame();
           }}
           onBlur={() => {
@@ -24,6 +26,7 @@ function Navbar() {
           }}
           placeholder='Hola'
         />
+        <button onClick={() => openModal('login')}>Loginga</button>
       </div>
     </nav>
   )

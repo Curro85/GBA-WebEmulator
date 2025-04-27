@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useEmulator } from '../services/useEmulator'
+import { useEmulator } from '../context/emulator.context'
 
 const Emulator = () => {
-    const { emulator, canvasRef } = useEmulator();
+    const { emulator, canvasRef, speed, handleSpeed } = useEmulator();
     const [status, setStatus] = useState("Esperando ROM...");
     const [isRunning, setIsRunning] = useState(false);
-    const [speed, setSpeed] = useState(1);
+    // const [speed, setSpeed] = useState(1);
     const [volume, setVolume] = useState(100);
 
     useEffect(() => {
@@ -15,10 +15,26 @@ const Emulator = () => {
         }
     }, [emulator, isRunning]);
 
+    // useEffect(() => {
+    //     const handleFocusin = (e) => {
+    //         const tag = e.target.tagName.toLowerCase();
+    //         if ((tag === 'input' || tag === 'textarea') && canvasRef.current) {
+    //             if (document.activeElement === canvasRef.current) {
+    //                 canvasRef.current.blur();
+    //             }
+    //         }
+    //     };
+
+    //     window.addEventListener('focusin', handleFocusin);
+    //     return () => {
+    //         window.removeEventListener('focusin', handleFocusin);
+    //     };
+    // }, [canvasRef]);
+
     const handleRomLoad = async (e) => {
         if (!emulator || !e.target.files?.[0]) return;
 
-        if(status.includes('Pausado') || status.includes('Jugando...')) {
+        if (status.includes('Pausado') || status.includes('Jugando...')) {
             emulator.quitGame();
         };
 
@@ -33,8 +49,6 @@ const Emulator = () => {
 
                 // 1. Escribir el ROM en el sistema de archivos virtual
                 emulator.FS.writeFile(`/data/games/${file.name}`, data);
-                emulator.setFastForwardMultiplier(1);
-                emulator.setMainLoopTiming(0, 16);
                 emulator.FSSync();
 
                 // 2. Cargar el ROM desde la ruta especificada
@@ -69,20 +83,22 @@ const Emulator = () => {
 
         if (isRunning) {
             emulator.pauseGame();
+            emulator.toggleInput(false);
             setIsRunning(false);
             setStatus("Pausado");
         } else {
             emulator.resumeGame();
+            emulator.toggleInput(true);
             setIsRunning(true);
             setStatus("Jugando...");
         }
     };
 
-    const handleSpeed = (e) => {
-        const inputSpeed = e.target.value;
-        setSpeed(inputSpeed);
-        emulator.setFastForwardMultiplier(inputSpeed);
-    }
+    // const handleSpeed = (e) => {
+    //     const inputSpeed = e.target.value;
+    //     setSpeed(inputSpeed);
+    //     emulator.setFastForwardMultiplier(inputSpeed);
+    // }
 
     const handleVolume = (e) => {
         const inputVolume = e.target.value;

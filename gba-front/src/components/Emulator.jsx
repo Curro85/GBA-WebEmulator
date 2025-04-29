@@ -15,22 +15,6 @@ const Emulator = () => {
         }
     }, [emulator, isRunning]);
 
-    // useEffect(() => {
-    //     const handleFocusin = (e) => {
-    //         const tag = e.target.tagName.toLowerCase();
-    //         if ((tag === 'input' || tag === 'textarea') && canvasRef.current) {
-    //             if (document.activeElement === canvasRef.current) {
-    //                 canvasRef.current.blur();
-    //             }
-    //         }
-    //     };
-
-    //     window.addEventListener('focusin', handleFocusin);
-    //     return () => {
-    //         window.removeEventListener('focusin', handleFocusin);
-    //     };
-    // }, [canvasRef]);
-
     const handleRomLoad = async (e) => {
         if (!emulator || !e.target.files?.[0]) return;
 

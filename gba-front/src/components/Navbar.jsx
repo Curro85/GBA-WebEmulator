@@ -12,21 +12,9 @@ function Navbar() {
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">Play</button>
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">x2</button>
         <button className="cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline">Volumen</button>
-        <input
-          className="bg-amber-50 text-blue-400"
-          type="text"
-          disabled={!emulator}
-          onFocus={() => {
-            emulator.toggleInput(false);
-            emulator.pauseGame();
-          }}
-          onBlur={() => {
-            emulator.toggleInput(true);
-            emulator.resumeGame();
-          }}
-          placeholder='Hola'
-        />
-        <button onClick={() => openModal('login')}>Loginga</button>
+        <button className='cursor-pointer bg-amber-950 rounded w-30 h-10 hover:underline' 
+        onClick={() => openModal('login')}>Loginga
+        </button>
       </div>
     </nav>
   )

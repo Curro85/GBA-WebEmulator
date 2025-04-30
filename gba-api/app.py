@@ -44,7 +44,7 @@ def login():
         return jsonify({'error': 'Credenciales incorrectas'}), 401
 
     access_token = create_access_token(identity=user.username)
-    return jsonify({'access_token': access_token}), 200
+    return jsonify({'access_token': access_token, 'username': user.username}), 200
 
 
 @app.route('/api/protected')

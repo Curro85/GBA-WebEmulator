@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState, useRef } from "react"
-import mGBA from '../lib/mgba-wasm'
+import { createContext, useContext, useEffect, useState, useRef } from "react";
+import mGBA from '../lib/mgba-wasm';
 
 const EmulatorContext = createContext();
 

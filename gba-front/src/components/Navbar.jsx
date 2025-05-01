@@ -1,5 +1,5 @@
 // import { useEmulator } from '../context/emulator.context';
-import { CogIcon, CloudArrowUpIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
 

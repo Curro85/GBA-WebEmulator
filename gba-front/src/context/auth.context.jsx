@@ -6,18 +6,27 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const username = localStorage.getItem('username');
+        profile();
+    }, []);
 
-        if (token && username) {
-            setUser(username);
+    const profile = async () => {
+        const response = await fetch('http://localhost:5000/api/profile', {
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            setUser(null);
         }
-    }, [])
+
+        const data = await response.json();
+        setUser(data.username);
+    }
 
     const login = async (username, password) => {
         try {
             const response = await fetch('http://localhost:5000/api/login', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
@@ -27,12 +36,7 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(dataError.error || 'Error al iniciar sesión');
             }
 
-            const data = await response.json();
-
-            localStorage.setItem('token', data.access_token);
-            localStorage.setItem('username', data.username);
-
-            setUser(data.username);
+            profile();
 
             return { success: true };
 
@@ -41,9 +45,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
+    const logout = async () => {
+        await fetch('http://localhost:5000/api/logout', {
+            method: 'POST',
+            credentials: 'include',
+        });
         setUser(null);
     }
 

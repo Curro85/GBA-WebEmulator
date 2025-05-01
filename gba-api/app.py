@@ -1,20 +1,16 @@
 from flask import Flask, jsonify, request
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
+    get_jwt_identity
 from flask_cors import CORS
 from models import db, User
-import os
-
-load_dotenv()
+from config import Config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URL')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
 db.init_app(app)
 jwt = JWTManager(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 with app.app_context():
     db.create_all()
@@ -44,7 +40,23 @@ def login():
         return jsonify({'error': 'Credenciales incorrectas'}), 401
 
     access_token = create_access_token(identity=user.username)
-    return jsonify({'access_token': access_token, 'username': user.username}), 200
+    response = jsonify({'msg': 'Login exitoso'})
+    set_access_cookies(response, access_token)
+    return response, 200
+
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    response = jsonify({'msg': 'Logout exitoso'})
+    unset_jwt_cookies(response)
+    return response, 200
+
+
+@app.route('/api/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    username = get_jwt_identity()
+    return jsonify({'username': username}), 200
 
 
 @app.route('/api/protected')

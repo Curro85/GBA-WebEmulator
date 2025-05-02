@@ -25,7 +25,6 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     hash = db.Column(db.String(40), nullable=False, unique=True)
     name = db.Column(db.String(80), nullable=False)
-    description = db.Column(db.String(200), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
     user = db.relationship('User', back_populates='games')
     saves = db.relationship('SaveData', back_populates='game')

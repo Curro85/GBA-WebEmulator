@@ -1,5 +1,5 @@
 // import { useEmulator } from '../context/emulator.context';
-import { ArrowRightOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { ArrowRightStartOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
@@ -101,7 +101,7 @@ function Navbar() {
               className="p-1.5 rounded-md hover:bg-gray-700/50 transition-colors text-gray-400 hover:text-red-400"
               title="Cerrar sesión"
             >
-              <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
             </button>
           </div>
         ) : (

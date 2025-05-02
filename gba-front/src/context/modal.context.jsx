@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from "react";
 import Modal from 'react-modal';
 import LoginForm from "../components/LoginForm";
 import RomList from '../components/RomList';
+import RegisterForm from "../components/RegisterForm";
 
 const ModalContext = createContext();
 
@@ -15,8 +16,9 @@ export const ModalProvider = ({ children }) => {
         const common = {
             isOpen: modal.type !== null,
             onRequestClose: closeModal,
+            closeTimeoutMS: 300,
             overlayClassName: 'fixed inset-0 bg-black/50 flex items-center justify-center',
-            className: 'bg-white rounded-lg p-6 max-w-lg mx-auto shadow-xl',
+            className: 'bg-gray-900 rounded-lg max-w-md w-full mx-auto shadow-xl',
             ariaHideApp: false,
             ...modal.props.modalOptions
         };
@@ -25,7 +27,25 @@ export const ModalProvider = ({ children }) => {
             case 'login':
                 return (
                     <Modal {...common}>
-                        <LoginForm onSuccess={closeModal} />
+                        <LoginForm
+                            onSuccess={closeModal}
+                            toRegister={() => {
+                                closeModal;
+                                openModal('register');
+                            }}
+                        />
+                    </Modal>
+                )
+            case 'register':
+                return (
+                    <Modal {...common}>
+                        <RegisterForm
+                            onSuccess={closeModal}
+                            toLogin={() => {
+                                closeModal;
+                                openModal('login');
+                            }}
+                        />
                     </Modal>
                 )
             case 'uploadrom':

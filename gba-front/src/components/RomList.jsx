@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
 import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../context/auth.context";
 
 function RomList({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -9,6 +10,7 @@ function RomList({ onSuccess }) {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
     const { emulator } = useEmulator();
+    const { getCookie } = useAuth();
 
     useEffect(() => {
         getLocalRoms();
@@ -16,7 +18,8 @@ function RomList({ onSuccess }) {
 
     const getLocalRoms = () => {
         const romsList = emulator.listRoms();
-        setRoms(romsList);
+        const filteredRoms = romsList.filter(name => /\.(gba|gbc|gb)$/i.test(name));
+        setRoms(filteredRoms);
     }
 
     const handleRomSelection = (rom, isChecked) => {
@@ -33,17 +36,30 @@ function RomList({ onSuccess }) {
         setIsLoading(true);
 
         try {
-            // Simulate upload (replace with your actual upload logic)
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            const response = await fetch('http://localhost:5000/api/uploadroms', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCookie('csrf_access_token'),
+                },
+                body: JSON.stringify({ selectedRoms }),
+            })
 
+            if (!response.ok) {
+                const dataError = await response.json();
+                throw new Error(dataError.error || 'Error al subir las ROMs');
+            }
             setSuccess(true);
             setTimeout(() => {
                 onSuccess();
                 setSuccess(false);
                 setIsLoading(false);
             }, 1000);
+
         } catch (error) {
-            setError('Error uploading ROMs. Please try again.');
+            console.log(error)
+            setError('Error al subir las ROMs. Intente de nuevo.');
             setIsLoading(false);
         }
     };

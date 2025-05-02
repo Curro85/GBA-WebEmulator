@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import Modal from 'react-modal';
 import LoginForm from "../components/LoginForm";
+import RomList from '../components/RomList';
 
 const ModalContext = createContext();
 
@@ -16,6 +17,7 @@ export const ModalProvider = ({ children }) => {
             onRequestClose: closeModal,
             overlayClassName: 'fixed inset-0 bg-black/50 flex items-center justify-center',
             className: 'bg-white rounded-lg p-6 max-w-lg mx-auto shadow-xl',
+            ariaHideApp: false,
             ...modal.props.modalOptions
         };
 
@@ -24,6 +26,12 @@ export const ModalProvider = ({ children }) => {
                 return (
                     <Modal {...common}>
                         <LoginForm onSuccess={closeModal} />
+                    </Modal>
+                )
+            case 'uploadrom':
+                return (
+                    <Modal {...common}>
+                        <RomList onSuccess={closeModal} />
                     </Modal>
                 )
             default:

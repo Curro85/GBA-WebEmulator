@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useEmulator } from '../context/emulator.context'
+import { PlayIcon, PauseIcon, ArrowUpTrayIcon, BoltIcon } from '@heroicons/react/24/outline';
 
 const Emulator = () => {
     const { emulator, canvasRef, speed, handleSpeed } = useEmulator();
@@ -91,65 +92,101 @@ const Emulator = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 space-y-4">
-            <div className="controls flex flex-wrap gap-4 bg-gray-800 p-4 rounded-lg shadow-xl w-full max-w-3xl">
-                <label className="cursor-pointer bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition-colors duration-200 flex items-center">
-                    📁 Cargar ROM
-                    <input
-                        type="file"
-                        className="hidden"
-                        accept=".gba, .gbc, .gb"
-                        onChange={handleRomLoad}
-                        disabled={isRunning}
+        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6 space-y-6">
+            <div className="w-full max-w-5xl space-y-6">
+                <div className="relative w-full aspect-[3/2] overflow-hidden rounded-xl border-4 border-gray-800 shadow-2xl bg-black group">
+                    <canvas
+                        ref={canvasRef}
+                        width={240}
+                        height={160}
+                        className="absolute top-0 left-0 w-full h-full object-contain"
                     />
-                </label>
 
-                <button
-                    onClick={toggleEmulation}
-                    className={`px-6 py-2 rounded-md font-bold transition-all duration-200 
-                        ${isRunning ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
-                >
-                    {isRunning ? "⏸" : "▶"}
-                </button>
+                    {/* Efecto CRT */}
+                    <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiNmZmYiPjwvcGF0aD4KPC9zdmc+')]"></div>
 
-                <div className="flex items-center space-x-2 bg-purple-500 px-4 py-2 rounded-md">
-                    <span className="text-sm">⚡ Velocidad</span>
-                    <input
-                        type="range"
-                        onChange={handleSpeed}
-                        id="speed"
-                        min="1"
-                        max="5"
-                        step="1"
-                        value={speed}
-                        className="w-24 accent-blue-500 cursor-pointer"
-                    />
+                    {/* Estado del emulador */}
+                    <div className={`absolute bottom-4 left-4 px-3 py-1 rounded-md text-sm font-medium ${status.includes('Error') ? 'bg-red-900/80 text-red-200' :
+                        status.includes('Pausado') ? 'bg-amber-900/80 text-amber-200' :
+                            status.includes('Jugando') ? 'bg-green-900/80 text-green-200' :
+                                'bg-gray-800/80 text-gray-300'
+                        }`}>
+                        {status}
+                    </div>
                 </div>
 
-                <div className="flex items-center space-x-2 bg-gray-700 px-4 py-2 rounded-md">
-                    <span className="text-sm">🔊 Volumen</span>
-                    <input
-                        type="range"
-                        onChange={handleVolume}
-                        id="volume"
-                        step="10"
-                        value={volume}
-                        className="w-24 accent-blue-500 cursor-pointer"
-                    />
+                {/* Controles */}
+                <div className="bg-gray-800/80 backdrop-blur-sm p-4 rounded-xl border border-gray-700 shadow-lg">
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                        {/* Botón Cargar ROM */}
+                        <label className="cursor-pointer flex items-center space-x-2 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-4 py-2 rounded-lg transition-all duration-200 shadow hover:shadow-purple-500/30">
+                            <ArrowUpTrayIcon className="h-5 w-5" />
+                            <span>Cargar ROM</span>
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept=".gba, .gbc, .gb"
+                                onChange={handleRomLoad}
+                                disabled={isRunning}
+                            />
+                        </label>
+
+                        {/* Botón Play/Pause */}
+                        <button
+                            onClick={toggleEmulation}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-bold transition-all duration-200 shadow ${isRunning ?
+                                'bg-red-600 hover:bg-red-500 shadow-red-500/30 hover:shadow-red-500/40' :
+                                'bg-green-600 hover:bg-green-500 shadow-green-500/30 hover:shadow-green-500/40'
+                                }`}
+                        >
+                            {isRunning ? (
+                                <>
+                                    <PauseIcon className="h-5 w-5" />
+                                    <span>Pausar</span>
+                                </>
+                            ) : (
+                                <>
+                                    <PlayIcon className="h-5 w-5" />
+                                    <span>Jugar</span>
+                                </>
+                            )}
+                        </button>
+
+                        {/* Control de velocidad */}
+                        <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
+                            <BoltIcon className="h-5 w-5 text-amber-400" />
+                            <input
+                                type="range"
+                                onChange={handleSpeed}
+                                min="1"
+                                max="5"
+                                step="1"
+                                value={speed}
+                                className="w-24 accent-amber-500 cursor-pointer"
+                            />
+                            <span className="text-sm font-mono bg-gray-800 px-2 py-1 rounded">
+                                x{speed}
+                            </span>
+                        </div>
+
+                        {/* Control de volumen */}
+                        <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
+                            <input
+                                type="range"
+                                onChange={handleVolume}
+                                min="0"
+                                max="100"
+                                value={volume}
+                                className="w-24 accent-blue-500 cursor-pointer"
+                            />
+                            <span className="text-sm font-mono bg-gray-800 px-2 py-1 rounded">
+                                {volume}%
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div className="status-indicator bg-gray-800 px-4 py-2 rounded-md text-sm text-gray-300">
-                {status}
-            </div>
-
-            <div className="relative w-full max-w-4xl aspect-[3/2] overflow-hidden rounded-lg border-2 border-gray-700 shadow-2xl bg-black">
-                <canvas
-                    ref={canvasRef}
-                    width={240}
-                    height={160}
-                    className="absolute top-0 left-0 w-full h-full object-contain"
-                />
+                <div className="h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-20 rounded-full"></div>
             </div>
         </div>
     );

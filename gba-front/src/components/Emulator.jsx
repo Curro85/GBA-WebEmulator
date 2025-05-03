@@ -3,11 +3,9 @@ import { useEmulator } from '../context/emulator.context'
 import { PlayIcon, PauseIcon, ArrowUpTrayIcon, BoltIcon } from '@heroicons/react/24/outline';
 
 const Emulator = () => {
-    const { emulator, canvasRef, speed, handleSpeed } = useEmulator();
+    const { emulator, canvasRef, speed, handleSpeed, volume, handleVolume } = useEmulator();
     const [status, setStatus] = useState("Esperando ROM...");
     const [isRunning, setIsRunning] = useState(false);
-    // const [speed, setSpeed] = useState(1);
-    const [volume, setVolume] = useState(100);
 
     useEffect(() => {
         if (emulator?.romLoaded && !isRunning) {
@@ -21,6 +19,7 @@ const Emulator = () => {
 
         if (status.includes('Pausado') || status.includes('Jugando...')) {
             emulator.quitGame();
+            emulator.toggleInput(true);
         };
 
         try {
@@ -78,18 +77,6 @@ const Emulator = () => {
             setStatus("Jugando...");
         }
     };
-
-    // const handleSpeed = (e) => {
-    //     const inputSpeed = e.target.value;
-    //     setSpeed(inputSpeed);
-    //     emulator.setFastForwardMultiplier(inputSpeed);
-    // }
-
-    const handleVolume = (e) => {
-        const inputVolume = e.target.value;
-        setVolume(inputVolume);
-        emulator.setVolume(inputVolume / 100);
-    }
 
     return (
         <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6 space-y-6">

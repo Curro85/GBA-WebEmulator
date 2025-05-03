@@ -1,5 +1,5 @@
 // import { useEmulator } from '../context/emulator.context';
-import { ArrowRightStartOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { ArrowRightStartOnRectangleIcon, Cog6ToothIcon, PlayIcon, SpeakerWaveIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
@@ -11,7 +11,6 @@ function Navbar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-gray-800 border-r border-purple-500/30 flex flex-col shadow-xl shadow-purple-500/10">
-      {/* Header */}
       <div className="p-6 border-b border-purple-500/30">
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
           GBA Web Emulator
@@ -19,7 +18,7 @@ function Navbar() {
         <p className="text-sm text-gray-400 mt-1">Relive the classics</p>
       </div>
 
-      {/* Navigation */}
+      {/* Navbar */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
@@ -31,49 +30,38 @@ function Navbar() {
           <span className="text-gray-200 group-hover:text-white">Guardar ROMs</span>
         </button>
 
-        {/* <button
+        <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
-          onClick={() => setIsPlaying(!isPlaying)}
         >
           <div className="p-1.5 rounded-md bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
-            {isPlaying ? (
-              <PauseIcon className="h-5 w-5 text-blue-400" />
-            ) : (
-              <PlayIcon className="h-5 w-5 text-blue-400" />
-            )}
+            <PlayIcon className="h-5 w-5 text-blue-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">
-            {isPlaying ? 'Pausar' : 'Jugar'}
+            Playea
           </span>
         </button>
 
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
-          onClick={() => setSpeed(speed === 1 ? 2 : 1)}
         >
           <div className="p-1.5 rounded-md bg-amber-600/20 group-hover:bg-amber-600/30 transition-colors">
             <BoltIcon className="h-5 w-5 text-amber-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">
-            Velocidad x{speed}
+            Velocidad
           </span>
         </button>
 
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
-          onClick={() => setIsMuted(!isMuted)}
         >
           <div className="p-1.5 rounded-md bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
-            {isMuted ? (
-              <SpeakerXMarkIcon className="h-5 w-5 text-green-400" />
-            ) : (
-              <SpeakerWaveIcon className="h-5 w-5 text-green-400" />
-            )}
+            <SpeakerWaveIcon className="h-5 w-5 text-green-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">
-            {isMuted ? 'Activar sonido' : 'Silenciar'}
+            Soniquete
           </span>
-        </button> */}
+        </button>
 
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
@@ -86,7 +74,7 @@ function Navbar() {
         </button>
       </nav>
 
-      {/* User Section */}
+      {/* Usuario */}
       <div className="p-4 border-t border-purple-500/30">
         {user ? (
           <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">

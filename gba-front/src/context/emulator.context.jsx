@@ -7,11 +7,18 @@ export const EmulatorProvider = ({ children }) => {
     const canvasRef = useRef(null);
     const [emulator, setEmulator] = useState(null);
     const [speed, setSpeed] = useState(1);
+    const [volume, setVolume] = useState(100);
 
     const handleSpeed = (e) => {
         const inputSpeed = e.target.value;
         setSpeed(inputSpeed);
         emulator.setFastForwardMultiplier(inputSpeed);
+    }
+
+    const handleVolume = (e) => {
+        const inputVolume = e.target.value;
+        setVolume(inputVolume);
+        emulator.setVolume(inputVolume / 100);
     }
 
     useEffect(() => {
@@ -24,13 +31,8 @@ export const EmulatorProvider = ({ children }) => {
                 console.log(`mGBA ${Module.version.projectVersion}`);
                 await Module.FSInit();
                 Module.setFastForwardMultiplier(1);
+                Module.setVolume(1);
                 Module.setMainLoopTiming(0, 16);
-
-                // Module.addCoreCallbacks({
-                //     romLoaded: (loaded) => {
-                //         Module.romLoaded = loaded;
-                //     }
-                // });
 
                 setEmulator(Module);
             } catch (error) {
@@ -49,7 +51,14 @@ export const EmulatorProvider = ({ children }) => {
     }, []);
 
     return (
-        <EmulatorContext.Provider value={{ emulator, canvasRef, speed, handleSpeed }}>
+        <EmulatorContext.Provider value={{
+            emulator,
+            canvasRef,
+            speed,
+            handleSpeed,
+            volume,
+            handleVolume
+        }}>
             {children}
         </EmulatorContext.Provider>
     )

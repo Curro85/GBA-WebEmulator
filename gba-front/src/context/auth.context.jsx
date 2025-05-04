@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
             method: 'POST',
             credentials: 'include',
         });
+
         setUser(null);
     };
 

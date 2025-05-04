@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -7,8 +8,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    register_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     profile = db.relationship('Profile', uselist=False, back_populates='user', cascade='all, delete-orphan')
-    games = db.relationship('Game', back_populates='user', cascade='all, delete-orphan')
+    roms = db.relationship('Rom', back_populates='user', cascade='all, delete-orphan')
     saves = db.relationship('SaveData', back_populates='user', cascade='all, delete-orphan')
 
 
@@ -21,20 +23,25 @@ class Profile(db.Model):
     user = db.relationship('User', back_populates='profile')
 
 
-class Game(db.Model):
+class Rom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    hash = db.Column(db.String(40), nullable=False, unique=True)
-    name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(256), nullable=False)
+    hash = db.Column(db.String(32), nullable=False, unique=True)
+    size = db.Column(db.Integer, nullable=False)
+    data = db.Column(db.LargeBinary, nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
-    user = db.relationship('User', back_populates='games')
-    saves = db.relationship('SaveData', back_populates='game')
+    user = db.relationship('User', back_populates='roms')
+    saves = db.relationship('SaveData', back_populates='rom')
 
 
 class SaveData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(100), nullable=False)
-    data = db.Column(db.LargeBinary)
+    name = db.Column(db.String(256), nullable=False)
+    size = db.Column(db.Integer, nullable=False)
+    data = db.Column(db.LargeBinary, nullable=False)
+    upload_date = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), index=True)
+    rom_id = db.Column(db.Integer, db.ForeignKey('rom.id'), index=True)
     user = db.relationship('User', back_populates='saves')
-    game = db.relationship('Game', back_populates='saves')
+    rom = db.relationship('Rom', back_populates='saves')

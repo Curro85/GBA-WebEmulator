@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import LoginForm from "../components/LoginForm";
 import RomList from '../components/RomList';
 import RegisterForm from "../components/RegisterForm";
+import UserRoms from "../components/UserRoms";
 
 const ModalContext = createContext();
 
@@ -46,6 +47,13 @@ export const ModalProvider = ({ children }) => {
                                 openModal('login');
                             }}
                         />
+                    </Modal>
+                )
+
+            case 'loadroms':
+                return (
+                    <Modal {...common}>
+                        <UserRoms onSuccess={closeModal} />
                     </Modal>
                 )
             case 'uploadrom':

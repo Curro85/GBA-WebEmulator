@@ -9,18 +9,6 @@ export const EmulatorProvider = ({ children }) => {
     const [speed, setSpeed] = useState(1);
     const [volume, setVolume] = useState(100);
 
-    const handleSpeed = (e) => {
-        const inputSpeed = e.target.value;
-        setSpeed(inputSpeed);
-        emulator.setFastForwardMultiplier(inputSpeed);
-    }
-
-    const handleVolume = (e) => {
-        const inputVolume = e.target.value;
-        setVolume(inputVolume);
-        emulator.setVolume(inputVolume / 100);
-    }
-
     useEffect(() => {
         const initEmulator = async () => {
             const canvas = canvasRef.current;
@@ -50,6 +38,29 @@ export const EmulatorProvider = ({ children }) => {
         // };
     }, []);
 
+    const getRomData = async (rom) => {
+        try {
+            const romData = emulator.FS.readFile(`/data/games/${rom}`);
+
+            return new Blob([romData], { type: 'application/octet-stream' });
+        } catch (error) {
+            console.log('Error leyendo ROM:', error);
+            throw error;
+        }
+    }
+
+    const handleSpeed = (e) => {
+        const inputSpeed = e.target.value;
+        setSpeed(inputSpeed);
+        emulator.setFastForwardMultiplier(inputSpeed);
+    }
+
+    const handleVolume = (e) => {
+        const inputVolume = e.target.value;
+        setVolume(inputVolume);
+        emulator.setVolume(inputVolume / 100);
+    }
+
     return (
         <EmulatorContext.Provider value={{
             emulator,
@@ -57,7 +68,8 @@ export const EmulatorProvider = ({ children }) => {
             speed,
             handleSpeed,
             volume,
-            handleVolume
+            handleVolume,
+            getRomData,
         }}>
             {children}
         </EmulatorContext.Provider>

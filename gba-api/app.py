@@ -2,9 +2,12 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
     get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from flask_cors import CORS
-from models import db, User, Profile
+from models import db, User, Profile, Rom
 from config import Config
+from utils import allowed_file
+import hashlib
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -75,15 +78,61 @@ def profile():
 @app.route('/api/uploadroms', methods=['POST'])
 @jwt_required()
 def uploadroms():
-    data = request.get_json()
-    print(data.get('selectedRoms'))
+    username = get_jwt_identity()
+
+    if 'roms' not in request.files:
+        return jsonify({'error': 'No se han seleccionado ROMs'}), 400
+
+    roms = request.files.getlist('roms')
+    user = User.query.filter_by(username=username).first()
+
+    for rom in roms:
+        try:
+            if not allowed_file(rom.filename):
+                continue
+
+            rom_data = rom.read()
+            rom_size = len(rom_data)
+            if rom_size < (32 * 1024) or rom_size > (32 * 1024 * 1024):  # De 32 kilobytes a 32 megabytes
+                continue
+
+            rom_hash = hashlib.md5(rom_data).hexdigest()
+            existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+            if existing_rom:
+                continue
+
+            rom_name = secure_filename(rom.filename)
+
+            new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, data=rom_data, user_id=user.id)
+            db.session.add(new_rom)
+            db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': 'Error al subir las ROMs'}), 500
+
     return jsonify({'msg': 'ROMs subidos'}), 200
 
 
-@app.route('/api/protected')
+@app.route('/api/loadroms', methods=['GET'])
 @jwt_required()
-def protected():
-    return jsonify({'message': 'Acceso concedido'}), 200
+def loadroms():
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
+    roms = Rom.query.filter_by(user_id=user.id).all()
+    return jsonify([{
+        'name': rom.name,
+        'hash': rom.hash,
+    } for rom in roms])
+
+
+@app.route('/api/loadrom/<string:rom_hash>', methods=['GET'])
+@jwt_required()
+def loadrom(rom_hash):
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
+    rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+    return jsonify({'rom_data': rom.data})
 
 
 @app.route('/api/users')

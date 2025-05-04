@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
-import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/auth.context";
+import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
 function RomList({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -9,7 +9,7 @@ function RomList({ onSuccess }) {
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
-    const { emulator } = useEmulator();
+    const { emulator, getRomData } = useEmulator();
     const { getCookie } = useAuth();
 
     useEffect(() => {
@@ -36,20 +36,26 @@ function RomList({ onSuccess }) {
         setIsLoading(true);
 
         try {
+            const formData = new FormData();
+            for (const rom of selectedRoms) {
+                const romBlob = await getRomData(rom);
+                formData.append('roms', romBlob, rom);
+            }
+
             const response = await fetch('http://localhost:5000/api/uploadroms', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': getCookie('csrf_access_token'),
                 },
-                body: JSON.stringify({ selectedRoms }),
+                body: formData,
             })
 
             if (!response.ok) {
                 const dataError = await response.json();
-                throw new Error(dataError.error || 'Error al subir las ROMs');
+                throw new Error(dataError.error || 'Inicia sesión para subir las ROMs');
             }
+
             setSuccess(true);
             setTimeout(() => {
                 onSuccess();
@@ -58,8 +64,7 @@ function RomList({ onSuccess }) {
             }, 1000);
 
         } catch (error) {
-            console.log(error)
-            setError('Error al subir las ROMs. Intente de nuevo.');
+            setError(error.message);
             setIsLoading(false);
         }
     };
@@ -91,7 +96,7 @@ function RomList({ onSuccess }) {
             {success ? (
                 <div className="flex flex-col items-center justify-center py-8">
                     <CheckCircleIcon className="h-16 w-16 text-green-500 mb-4" />
-                    <p className="text-xl text-white font-medium">ROMs uploaded successfully!</p>
+                    <p className="text-xl text-white font-medium">ROMs subidas correctamente!</p>
                 </div>
             ) : (
                 <>
@@ -114,7 +119,7 @@ function RomList({ onSuccess }) {
                             </ul>
                         ) : (
                             <div className="text-center py-8 text-gray-400">
-                                No ROMs found in local storage
+                                No hay ROMs almacenados localmente
                             </div>
                         )}
                     </div>

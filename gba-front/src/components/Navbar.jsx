@@ -32,12 +32,13 @@ function Navbar() {
 
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
+          onClick={() => openModal('loadroms')}
         >
           <div className="p-1.5 rounded-md bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
             <PlayIcon className="h-5 w-5 text-blue-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">
-            Playea
+            Mis ROMs
           </span>
         </button>
 

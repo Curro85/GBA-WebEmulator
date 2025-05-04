@@ -1,4 +1,8 @@
-from flask import Flask, jsonify, request
+import os
+import hashlib
+import traceback
+
+from flask import Flask, jsonify, request, send_file
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
     get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,7 +11,6 @@ from flask_cors import CORS
 from models import db, User, Profile, Rom
 from config import Config
 from utils import allowed_file
-import hashlib
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -17,6 +20,7 @@ jwt = JWTManager(app)
 CORS(app, supports_credentials=True)
 
 with app.app_context():
+    os.makedirs(app.config['ROM_FOLDER'], exist_ok=True)
     db.create_all()
 
 
@@ -79,37 +83,45 @@ def profile():
 @jwt_required()
 def uploadroms():
     username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
 
     if 'roms' not in request.files:
         return jsonify({'error': 'No se han seleccionado ROMs'}), 400
 
     roms = request.files.getlist('roms')
-    user = User.query.filter_by(username=username).first()
+    user_directory = os.path.join(app.config['ROM_FOLDER'], str(user.id))
+    os.makedirs(user_directory, exist_ok=True)
 
     for rom in roms:
-        try:
-            if not allowed_file(rom.filename):
-                continue
+        if not allowed_file(rom.filename):
+            continue
 
-            rom_data = rom.read()
-            rom_size = len(rom_data)
-            if rom_size < (32 * 1024) or rom_size > (32 * 1024 * 1024):  # De 32 kilobytes a 32 megabytes
-                continue
+        rom_data = rom.read()
+        rom_size = len(rom_data)
+        if rom_size < (32 * 1024) or rom_size > (32 * 1024 * 1024):  # De 32 kilobytes a 32 megabytes
+            continue
 
-            rom_hash = hashlib.md5(rom_data).hexdigest()
-            existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
-            if existing_rom:
-                continue
+        rom_hash = hashlib.sha256(rom_data).hexdigest()
+        existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+        if existing_rom:
+            continue
 
-            rom_name = secure_filename(rom.filename)
+        rom_name = secure_filename(rom.filename)
+        file_path = os.path.join(user_directory, rom_name)
+        rom_path = os.path.join(str(user.id), rom_name)
 
-            new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, data=rom_data, user_id=user.id)
-            db.session.add(new_rom)
-            db.session.commit()
+        with open(file_path, 'wb') as f:
+            f.write(rom_data)
 
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'error': 'Error al subir las ROMs'}), 500
+        new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, path=rom_path, user_id=user.id)
+        db.session.add(new_rom)
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        traceback.print_exc()
+        db.session.rollback()
+        return jsonify({'error': 'Error al subir las ROMs'}), 500
 
     return jsonify({'msg': 'ROMs subidos'}), 200
 
@@ -123,6 +135,8 @@ def loadroms():
     return jsonify([{
         'name': rom.name,
         'hash': rom.hash,
+        'size': rom.size,
+        'upload_date': rom.upload_date,
     } for rom in roms])
 
 
@@ -132,7 +146,27 @@ def loadrom(rom_hash):
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
-    return jsonify({'rom_data': rom.data})
+
+    if not rom:
+        return jsonify({'error': 'ROM no encontrada'}), 404
+
+    try:
+        if not rom.path.startswith(str(user.id)):
+            return jsonify({'error': 'Acceso denegado'}), 403
+        safe_path = os.path.join(app.config['ROM_FOLDER'], rom.path)
+
+        if not os.path.isfile(safe_path):
+            return jsonify({'error': 'Archivo de ROM no encontrado'}), 404
+
+        return send_file(
+            safe_path,
+            mimetype='application/octet-stream',
+            as_attachment=False,
+            download_name=rom.name,
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'error': 'Error al cargar la ROM'}), 500
 
 
 @app.route('/api/users')

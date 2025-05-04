@@ -1,82 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useEmulator } from '../context/emulator.context'
 import { PlayIcon, PauseIcon, ArrowUpTrayIcon, BoltIcon } from '@heroicons/react/24/outline';
 
 const Emulator = () => {
-    const { emulator, canvasRef, speed, handleSpeed, volume, handleVolume } = useEmulator();
-    const [status, setStatus] = useState("Esperando ROM...");
-    const [isRunning, setIsRunning] = useState(false);
+    const {
+        emulator,
+        canvasRef,
+        speed,
+        handleSpeed,
+        volume,
+        handleVolume,
+        handleRomLoad,
+        toggleEmulation,
+        status,
+        isRunning,
+        setIsRunning
+    } = useEmulator();
 
     useEffect(() => {
         if (emulator?.romLoaded && !isRunning) {
             emulator.start();
             setIsRunning(true);
         }
-    }, [emulator, isRunning]);
-
-    const handleRomLoad = async (e) => {
-        if (!emulator || !e.target.files?.[0]) return;
-
-        if (status.includes('Pausado') || status.includes('Jugando...')) {
-            emulator.quitGame();
-            emulator.toggleInput(true);
-        };
-
-        try {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = async (e) => {
-                const data = new Uint8Array(e.target.result);
-                console.log(data);
-                console.log(file);
-
-                // 1. Escribir el ROM en el sistema de archivos virtual
-                emulator.FS.writeFile(`/data/games/${file.name}`, data);
-                emulator.FSSync();
-
-                // 2. Cargar el ROM desde la ruta especificada
-                const loadResult = emulator.loadGame(`/data/games/${file.name}`);
-                setIsRunning(true);
-
-                if (loadResult) {
-                    setStatus("Jugando...");
-                    setIsRunning(true);
-                    console.log("ROM cargado correctamente", {
-                        romLoaded: true,
-                        fileList: emulator.listRoms(),
-                        saveList: emulator.listSaves(),
-                        save: emulator.getSave(),
-                    });
-                } else {
-                    setStatus("Error: ROM no compatible");
-                    console.error("Error al cargar ROM");
-                }
-            };
-
-            reader.readAsArrayBuffer(file);
-
-        } catch (error) {
-            console.error("Error completo:", error);
-            setStatus("Error cargando ROM");
-        }
-    };
-
-    const toggleEmulation = () => {
-        if (!emulator) return;
-
-        if (isRunning) {
-            emulator.pauseGame();
-            emulator.toggleInput(false);
-            setIsRunning(false);
-            setStatus("Pausado");
-        } else {
-            emulator.resumeGame();
-            emulator.toggleInput(true);
-            setIsRunning(true);
-            setStatus("Jugando...");
-        }
-    };
+    }, [emulator, isRunning, setIsRunning]);
 
     return (
         <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6 space-y-6">
@@ -113,7 +59,7 @@ const Emulator = () => {
                                 type="file"
                                 className="hidden"
                                 accept=".gba, .gbc, .gb"
-                                onChange={handleRomLoad}
+                                onChange={(e) => handleRomLoad(e)}
                                 disabled={isRunning}
                             />
                         </label>

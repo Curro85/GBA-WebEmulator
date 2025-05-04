@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
 import { useAuth } from "../context/auth.context";
-import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 function RomList({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -88,7 +88,8 @@ function RomList({ onSuccess }) {
             </div>
 
             {error && (
-                <div className="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-md text-red-200">
+                <div className="mb-6 p-3 flex items-center bg-red-900/50 border border-red-500 rounded-md text-red-200">
+                    <ExclamationTriangleIcon className="h-5 w-5 mr-2" />
                     {error}
                 </div>
             )}

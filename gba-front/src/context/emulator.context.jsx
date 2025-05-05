@@ -51,6 +51,17 @@ export const EmulatorProvider = ({ children }) => {
         }
     }
 
+    const getSaveData = async (save) => {
+        try {
+            const saveData = emulator.FS.readFile(`/data/saves/${save}`);
+
+            return new Blob([saveData], { type: 'application/octet-stream' });
+        } catch (error) {
+            console.log('Error leyendo datos de guardado:', error);
+            throw error;
+        }
+    }
+
     const handleRomLoad = async (e) => {
         if (!emulator || !e.target.files?.[0]) return;
 
@@ -134,6 +145,7 @@ export const EmulatorProvider = ({ children }) => {
             volume,
             handleVolume,
             getRomData,
+            getSaveData,
             handleRomLoad,
             isRunning,
             status,

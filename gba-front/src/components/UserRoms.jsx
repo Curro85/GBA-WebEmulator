@@ -6,6 +6,9 @@ function UserRoms({ onSuccess }) {
     const [roms, setRoms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [expandedRom, setExpandedRom] = useState(null);
+    const [saves, setSaves] = useState({});
+    const [loadingSaves, setLoadingSaves] = useState({});
     const { emulator } = useEmulator();
 
     useEffect(() => {
@@ -32,7 +35,28 @@ function UserRoms({ onSuccess }) {
         }
     };
 
-    const handleSelect = async (rom) => {
+    const loadSaves = async (romHash) => {
+        setLoadingSaves((prev) => ({ ...prev, [romHash]: true }));
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/loadsaves/${romHash}`,
+                {
+                    credentials: "include",
+                }
+            );
+
+            if (!response.ok) throw new Error("Error cargando partidas");
+
+            const data = await response.json();
+            setSaves((prev) => ({ ...prev, [romHash]: data }));
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingSaves((prev) => ({ ...prev, [romHash]: false }));
+        }
+    };
+
+    const handleSelect = async (rom, save) => {
         try {
             const response = await fetch(`http://localhost:5000/api/loadrom/${rom.hash}`, {
                 credentials: 'include',
@@ -48,6 +72,25 @@ function UserRoms({ onSuccess }) {
                 type: 'application/octet-stream',
             });
 
+            if (save) {
+                const saveResponse = await fetch(`http://localhost:5000/api/loadsave/${save.id}`, {
+                    credentials: 'include',
+                });
+
+                if (!saveResponse.ok) {
+                    throw new Error('Error cargando partida');
+                }
+
+                const saveBlob = await saveResponse.blob();
+                const saveFile = new File([saveBlob], save.name, {
+                    type: 'application/octet-stream',
+                })
+
+                await emulator.uploadSaveOrSaveState(saveFile, () => {
+                    emulator.FSSync();
+                })
+            }
+
             await emulator.uploadRom(romFile, () => {
                 emulator.FSSync();
                 emulator.quitGame();
@@ -62,6 +105,15 @@ function UserRoms({ onSuccess }) {
             console.log(error.message);
         }
 
+    };
+
+    const toggleRom = async (rom) => {
+        if (expandedRom === rom.hash) {
+            setExpandedRom(null);
+        } else {
+            setExpandedRom(rom.hash);
+            if (!saves[rom.hash]) await loadSaves(rom.hash);
+        }
     };
 
     return (
@@ -92,26 +144,26 @@ function UserRoms({ onSuccess }) {
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-8">
                     <ArrowPathIcon className="h-12 w-12 text-purple-500 animate-spin mb-4" />
-                    <p className="text-gray-400 animate-pulse">Cargando tus ROMs<span className="animate-bounce">...</span></p>
+                    <p className="text-gray-400 animate-pulse">
+                        Cargando tus ROMs<span className="animate-bounce">...</span>
+                    </p>
                 </div>
             ) : (
                 <div className="mb-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                     {roms.length > 0 ? (
                         <ul className="space-y-2">
                             {roms.map((rom) => (
-                                <li
-                                    key={rom.hash}
-                                    className="group relative flex items-center transition-all"
-                                >
+                                <li key={rom.hash}>
                                     <div
-                                        className="w-full p-3 rounded-lg bg-gray-800 hover:bg-purple-900/30 cursor-pointer transition-all duration-300"
-                                        onClick={() => handleSelect(rom)}
+                                        className={`p-3 rounded-lg bg-gray-800 hover:bg-purple-900/30 cursor-pointer transition-all ${expandedRom === rom.hash ? "bg-purple-900/20" : ""
+                                            }`}
+                                        onClick={() => toggleRom(rom)}
                                     >
                                         <div className="flex items-center justify-between">
                                             <span className="text-gray-200 font-mono truncate text-sm">
                                                 {rom.name.replace(/\.[^/.]+$/, "")}
                                             </span>
-                                            <span className="hidden group-hover:block text-purple-400 ml-2">
+                                            <span className="text-purple-400 ml-2">
                                                 <CloudArrowUpIcon className="h-4 w-4" />
                                             </span>
                                         </div>
@@ -123,6 +175,53 @@ function UserRoms({ onSuccess }) {
                                                 {(rom.size / 1024 / 1024).toFixed(1)} MB
                                             </span>
                                         </div>
+
+                                        {expandedRom === rom.hash && (
+                                            <div className="mt-3 ml-4 border-l-2 border-purple-500 pl-3">
+                                                <h4 className="text-sm text-purple-400 mb-2 flex items-center">
+                                                    {/* <SaveIcon className="h-4 w-4 mr-2" /> */}
+                                                    Partidas guardadas
+                                                </h4>
+                                                {loadingSaves[rom.hash] ? (
+                                                    <div className="text-gray-400 text-sm">
+                                                        Cargando partidas...
+                                                    </div>
+                                                ) : (
+                                                    <ul className="space-y-2">
+                                                        {saves[rom.hash]?.map((save) => (
+                                                            <li
+                                                                key={save.id}
+                                                                className="p-2 bg-gray-700 rounded hover:bg-purple-800/30 flex justify-between items-center transition-colors"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleSelect(rom, save);
+                                                                }}
+                                                            >
+                                                                <span className="text-xs text-gray-200">
+                                                                    {new Date(
+                                                                        save.upload_date
+                                                                    ).toLocaleDateString()}
+                                                                    <span> Elegir esta partida</span>
+                                                                </span>
+                                                                <span className="text-xs text-gray-400">
+                                                                    {(save.size / 1024).toFixed(1)} KB
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                        {saves[rom.hash]?.length === 0 && (
+                                                            <li className="text-xs text-gray-400 p-2"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleSelect(rom);
+                                                                }}>
+                                                                No hay partidas guardadas
+                                                                <p> Pulse aquí para empezar una</p>
+                                                            </li>
+                                                        )}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </li>
                             ))}
@@ -130,14 +229,16 @@ function UserRoms({ onSuccess }) {
                     ) : (
                         <div className="text-center py-8 text-gray-400">
                             <p>No tienes ROMs guardadas aún</p>
-                            <p className="mt-2 text-sm">¡Sube tus juegos desde el botón superior!</p>
+                            <p className="mt-2 text-sm">
+                                ¡Sube tus juegos desde el botón superior!
+                            </p>
                         </div>
                     )}
                 </div>
             )}
 
             <div className="mt-4 text-center text-sm text-gray-400">
-                Haz clic en una ROM para cargarla en el emulador
+                Haz clic en una ROM para ver sus partidas guardadas
             </div>
         </div>
     );

@@ -6,10 +6,11 @@ import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon, ExclamationTriangleIc
 function RomList({ onSuccess }) {
     const [roms, setRoms] = useState([]);
     const [selectedRoms, setSelectedRoms] = useState([]);
+    const [includeSaves, setIncludeSaves] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
-    const { emulator, getRomData } = useEmulator();
+    const { emulator, getRomData, getSaveData } = useEmulator();
     const { getCookie } = useAuth();
 
     useEffect(() => {
@@ -40,7 +41,20 @@ function RomList({ onSuccess }) {
             for (const rom of selectedRoms) {
                 const romBlob = await getRomData(rom);
                 formData.append('roms', romBlob, rom);
+
+                if (includeSaves) {
+                    try {
+                        const save = rom.replace(/\.[^.]+$/, '.sav');
+                        const saveBlob = await getSaveData(save);
+                        formData.append('saves', saveBlob, save);
+                    } catch (error) {
+                        console.log('No se encontró save para:', rom, error.message);
+                    }
+                }
             }
+
+            formData.append('include_saves', includeSaves);
+
 
             const response = await fetch('http://localhost:5000/api/uploadroms', {
                 method: 'POST',
@@ -123,6 +137,20 @@ function RomList({ onSuccess }) {
                                 No hay ROMs almacenados localmente
                             </div>
                         )}
+                    </div>
+
+                    <div className="mb-4 flex items-center">
+                        <label className="flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={includeSaves}
+                                onChange={(e) => setIncludeSaves(e.target.checked)}
+                                className="h-4 w-4 text-purple-600 rounded focus:ring-purple-500 border-gray-600 bg-gray-700 mr-2"
+                            />
+                            <span className="text-gray-300 text-sm">
+                                Incluir datos de guardado (.sav)
+                            </span>
+                        </label>
                     </div>
 
                     <button

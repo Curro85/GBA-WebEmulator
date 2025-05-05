@@ -11,11 +11,13 @@ function Navbar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-gray-800 border-r border-purple-500/30 flex flex-col shadow-xl shadow-purple-500/10">
-      <div className="p-6 border-b border-purple-500/30">
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+      <div className="p-6 border-b border-purple-500/30 text-center">
+        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
           GBA Web Emulator
         </h1>
-        <p className="text-sm text-gray-400 mt-1">Relive the classics</p>
+        <p className="text-sm text-gray-400 mt-1">Desarrollado por
+          <a className='text-amber-600' href='https://github.com/Curro85' target='_blank'> Curro85</a>
+        </p>
       </div>
 
       {/* Navbar */}
@@ -37,9 +39,7 @@ function Navbar() {
           <div className="p-1.5 rounded-md bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
             <PlayIcon className="h-5 w-5 text-blue-400" />
           </div>
-          <span className="text-gray-200 group-hover:text-white">
-            Mis ROMs
-          </span>
+          <span className="text-gray-200 group-hover:text-white">Mis ROMs</span>
         </button>
 
         <button
@@ -48,9 +48,7 @@ function Navbar() {
           <div className="p-1.5 rounded-md bg-amber-600/20 group-hover:bg-amber-600/30 transition-colors">
             <BoltIcon className="h-5 w-5 text-amber-400" />
           </div>
-          <span className="text-gray-200 group-hover:text-white">
-            Velocidad
-          </span>
+          <span className="text-gray-200 group-hover:text-white">Velocidad</span>
         </button>
 
         <button
@@ -59,9 +57,7 @@ function Navbar() {
           <div className="p-1.5 rounded-md bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
             <SpeakerWaveIcon className="h-5 w-5 text-green-400" />
           </div>
-          <span className="text-gray-200 group-hover:text-white">
-            Soniquete
-          </span>
+          <span className="text-gray-200 group-hover:text-white">Soniquete</span>
         </button>
 
         <button

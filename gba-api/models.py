@@ -11,7 +11,7 @@ class User(db.Model):
     register_date = db.Column(db.DateTime, default=datetime.now())
     profile = db.relationship('Profile', uselist=False, back_populates='user', cascade='all, delete-orphan')
     roms = db.relationship('Rom', back_populates='user', cascade='all, delete-orphan')
-    saves = db.relationship('SaveData', back_populates='user', cascade='all, delete-orphan')
+    saves = db.relationship('Save', back_populates='user', cascade='all, delete-orphan')
 
 
 class Profile(db.Model):
@@ -32,10 +32,10 @@ class Rom(db.Model):
     upload_date = db.Column(db.DateTime, default=datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
     user = db.relationship('User', back_populates='roms')
-    saves = db.relationship('SaveData', back_populates='rom')
+    saves = db.relationship('Save', back_populates='rom')
 
 
-class SaveData(db.Model):
+class Save(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     size = db.Column(db.Integer, nullable=False)

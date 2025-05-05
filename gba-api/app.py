@@ -8,9 +8,9 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, se
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
-from models import db, User, Profile, Rom
+from models import db, User, Profile, Rom, Save
 from config import Config
-from utils import allowed_file
+from utils import allowed_file, create_user_directories
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -84,13 +84,16 @@ def profile():
 def uploadroms():
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
+    include_saves = request.form.get('include_saves', 'false') == 'true'
 
     if 'roms' not in request.files:
         return jsonify({'error': 'No se han seleccionado ROMs'}), 400
 
+    create_user_directories(user.id)
+
     roms = request.files.getlist('roms')
+    saves = request.files.getlist('saves')
     user_directory = os.path.join(app.config['ROM_FOLDER'], str(user.id))
-    os.makedirs(user_directory, exist_ok=True)
 
     for rom in roms:
         if not allowed_file(rom.filename):
@@ -104,9 +107,27 @@ def uploadroms():
         rom_hash = hashlib.sha256(rom_data).hexdigest()
         existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
         if existing_rom:
+            for save in saves:
+                save_data = save.read()
+                save_size = len(save_data)
+                save_name = save.filename
+                file_save_path = os.path.join(user_directory, 'saves', save_name)
+                save_path = os.path.join(str(user.id), 'saves', save_name)
+
+                with open(file_save_path, 'wb') as f:
+                    f.write(save_data)
+
+                new_save = Save(
+                    name=save_name,
+                    size=save_size,
+                    path=save_path,
+                    user_id=user.id,
+                    rom_id=existing_rom.id,
+                )
+                db.session.add(new_save)
             continue
 
-        rom_name = secure_filename(rom.filename)
+        rom_name = rom.filename
         file_path = os.path.join(user_directory, rom_name)
         rom_path = os.path.join(str(user.id), rom_name)
 
@@ -115,6 +136,27 @@ def uploadroms():
 
         new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, path=rom_path, user_id=user.id)
         db.session.add(new_rom)
+        db.session.flush()
+
+        if include_saves:
+            for save in saves:
+                save_data = save.read()
+                save_size = len(save_data)
+                save_name = save.filename
+                file_save_path = os.path.join(user_directory, 'saves', save_name)
+                save_path = os.path.join(str(user.id), 'saves', save_name)
+
+                with open(file_save_path, 'wb') as f:
+                    f.write(save_data)
+
+                new_save = Save(
+                    name=save_name,
+                    size=save_size,
+                    path=save_path,
+                    user_id=user.id,
+                    rom_id=new_rom.id,
+                )
+                db.session.add(new_save)
 
     try:
         db.session.commit()
@@ -169,10 +211,51 @@ def loadrom(rom_hash):
         return jsonify({'error': 'Error al cargar la ROM'}), 500
 
 
-@app.route('/api/users')
-def get_users():
-    return jsonify([{'id': 1, 'name': 'Pruebita'},
-                    {'id': 2, 'name': 'Francisco'}])
+@app.route('/api/loadsaves/<string:rom_hash>', methods=['GET'])
+@jwt_required()
+def loadsaves(rom_hash):
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
+    rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+
+    if not rom:
+        return jsonify({'error': 'ROM no encontrada'}), 404
+
+    saves = Save.query.filter_by(rom_id=rom.id).order_by(Save.upload_date.desc()).limit(3).all()
+    return jsonify([{
+        'id': save.id,
+        'name': save.name,
+        'size': save.size,
+        'upload_date': save.upload_date,
+    } for save in saves])
+
+
+@app.route('/api/loadsave/<int:save_id>', methods=['GET'])
+@jwt_required()
+def loadsave(save_id):
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
+    save = Save.query.filter_by(id=save_id, user_id=user.id).first()
+
+    if not save:
+        return jsonify({'error': 'Save no encontrada'}), 404
+
+    try:
+        if not save.path.startswith(str(user.id)):
+            return jsonify({'error': 'Acceso denegado'}), 403
+
+        safe_path = os.path.join(app.config['ROM_FOLDER'], save.path)
+        if not os.path.isfile(safe_path):
+            return jsonify({'error': 'Archivo de partida no encontrado'}), 404
+
+        return send_file(
+            safe_path,
+            mimetype='application/octet-stream',
+            as_attachment=False,
+            download_name=save.name,
+        )
+    except Exception as e:
+        return jsonify({'error': 'Hubo un error inesperado'}), 500
 
 
 if __name__ == '__main__':

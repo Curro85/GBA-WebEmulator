@@ -95,6 +95,9 @@ def uploadroms():
     saves = request.files.getlist('saves')
     user_directory = os.path.join(app.config['ROM_FOLDER'], str(user.id))
 
+    rom_ids = {}
+    new_roms = []
+
     for rom in roms:
         if not allowed_file(rom.filename):
             continue
@@ -107,24 +110,7 @@ def uploadroms():
         rom_hash = hashlib.sha256(rom_data).hexdigest()
         existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
         if existing_rom:
-            for save in saves:
-                save_data = save.read()
-                save_size = len(save_data)
-                save_name = save.filename
-                file_save_path = os.path.join(user_directory, 'saves', save_name)
-                save_path = os.path.join(str(user.id), 'saves', save_name)
-
-                with open(file_save_path, 'wb') as f:
-                    f.write(save_data)
-
-                new_save = Save(
-                    name=save_name,
-                    size=save_size,
-                    path=save_path,
-                    user_id=user.id,
-                    rom_id=existing_rom.id,
-                )
-                db.session.add(new_save)
+            rom_ids[existing_rom.name] = existing_rom.id
             continue
 
         rom_name = rom.filename
@@ -136,10 +122,26 @@ def uploadroms():
 
         new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, path=rom_path, user_id=user.id)
         db.session.add(new_rom)
-        db.session.flush()
+        new_roms.append(new_rom)
 
-        if include_saves:
-            for save in saves:
+    try:
+        db.session.flush()
+        for rom in new_roms:
+            rom_ids[rom.name] = rom.id
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al subir ROMs'}), 500
+
+    if include_saves and rom_ids:
+        for save in saves:
+            base_save_name = os.path.splitext(save.filename)[0]
+
+            matching_roms = [name for name in rom_ids if name.startswith(base_save_name)]
+
+            if matching_roms:
+                rom_name = matching_roms[0]
+                rom_id = rom_ids[rom_name]
+
                 save_data = save.read()
                 save_size = len(save_data)
                 save_name = save.filename
@@ -154,7 +156,7 @@ def uploadroms():
                     size=save_size,
                     path=save_path,
                     user_id=user.id,
-                    rom_id=new_rom.id,
+                    rom_id=rom_id,
                 )
                 db.session.add(new_save)
 

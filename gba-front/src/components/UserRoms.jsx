@@ -200,7 +200,7 @@ function UserRoms({ onSuccess }) {
                                                                 <span className="text-xs text-gray-200">
                                                                     {new Date(
                                                                         save.upload_date
-                                                                    ).toLocaleDateString()}
+                                                                    ).toLocaleString()}
                                                                     <span> Elegir esta partida</span>
                                                                 </span>
                                                                 <span className="text-xs text-gray-400">

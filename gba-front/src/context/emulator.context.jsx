@@ -10,6 +10,7 @@ export const EmulatorProvider = ({ children }) => {
     const [volume, setVolume] = useState(100);
     const [status, setStatus] = useState("Esperando ROM...");
     const [isRunning, setIsRunning] = useState(false);
+    const allowedFiles = ['gba', 'gbc', 'gb'];
 
     useEffect(() => {
         const initEmulator = async () => {
@@ -62,14 +63,21 @@ export const EmulatorProvider = ({ children }) => {
         }
     }
 
-    const handleRomLoad = async (e) => {
-        if (!emulator || !e.target.files?.[0]) return;
+    const handleRomLoad = async (file) => {
+        if (!emulator || !file) return;
+
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        console.log(fileExt);
+
+        if (!allowedFiles.includes(fileExt)) {
+            setStatus('Error: Formato no soportado');
+            return;
+        }
 
         emulator.quitGame();
         emulator.toggleInput(true);
 
         try {
-            const file = e.target.files[0];
             const reader = new FileReader();
 
             reader.onload = async (e) => {
@@ -83,7 +91,6 @@ export const EmulatorProvider = ({ children }) => {
 
                 // 2. Cargar el ROM desde la ruta especificada
                 const loadResult = emulator.loadGame(`/data/games/${file.name}`);
-                setIsRunning(true);
 
                 if (loadResult) {
                     setStatus("Jugando...");

@@ -24,11 +24,22 @@ const Emulator = () => {
         }
     }, [emulator, isRunning, setIsRunning]);
 
+    const handleOnDrop = (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        handleRomLoad(files[0]);
+    }
+
     return (
         <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-6 space-y-6">
             <div className="w-full max-w-5xl space-y-6">
                 <div className="relative w-full aspect-[3/2] overflow-hidden rounded-xl border-4 border-gray-800 shadow-2xl bg-black group">
                     <canvas
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'copy';
+                        }}
+                        onDrop={(e) => handleOnDrop(e)}
                         ref={canvasRef}
                         width={240}
                         height={160}
@@ -59,7 +70,7 @@ const Emulator = () => {
                                 type="file"
                                 className="hidden"
                                 accept=".gba, .gbc, .gb"
-                                onChange={(e) => handleRomLoad(e)}
+                                onChange={(e) => handleRomLoad(e.target.files[0])}
                                 disabled={isRunning}
                             />
                         </label>
@@ -91,6 +102,8 @@ const Emulator = () => {
                             <input
                                 type="range"
                                 onChange={handleSpeed}
+                                onMouseUp={(e) => e.target.blur()}
+                                onKeyUp={(e) => e.target.blur()}
                                 min="1"
                                 max="5"
                                 step="1"
@@ -107,6 +120,8 @@ const Emulator = () => {
                             <input
                                 type="range"
                                 onChange={handleVolume}
+                                onMouseUp={(e) => e.target.blur()}
+                                onKeyUp={(e) => e.target.blur()}
                                 min="0"
                                 max="100"
                                 value={volume}

@@ -1,5 +1,6 @@
 import os
 import hashlib
+from pathlib import Path, PurePath
 import traceback
 
 from flask import Flask, jsonify, request, send_file
@@ -197,7 +198,9 @@ def loadrom(rom_hash):
     try:
         if not rom.path.startswith(str(user.id)):
             return jsonify({'error': 'Acceso denegado'}), 403
-        safe_path = os.path.join(app.config['ROM_FOLDER'], rom.path)
+
+        relative = PurePath(rom.path)
+        safe_path = Path(app.config['ROM_FOLDER']) / relative
 
         if not os.path.isfile(safe_path):
             return jsonify({'error': 'Archivo de ROM no encontrado'}), 404
@@ -262,3 +265,4 @@ def loadsave(save_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # app.run(host='0.0.0.0', debug=True, port=5000)

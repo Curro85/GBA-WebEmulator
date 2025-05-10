@@ -131,10 +131,10 @@ export const EmulatorProvider = ({ children }) => {
         }
     };
 
-    const handleSpeed = (e) => {
-        const inputSpeed = e.target.value;
-        setSpeed(inputSpeed);
-        emulator.setFastForwardMultiplier(inputSpeed);
+    const handleSpeed = (number) => {
+        const speedRange = Math.max(1, Math.min(5, number));
+        setSpeed(speedRange);
+        emulator.setFastForwardMultiplier(speedRange);
     }
 
     const handleVolume = (e) => {

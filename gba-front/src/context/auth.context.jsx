@@ -10,16 +10,20 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const profile = async () => {
-        const response = await fetch('http://localhost:5000/api/profile', {
-            credentials: 'include',
-        });
+        try {
+            const response = await fetch('http://localhost:5000/api/profile', {
+                credentials: 'include',
+            });
 
-        if (!response.ok) {
-            setUser(null);
+            if (!response.ok) {
+                setUser(null);
+            }
+
+            const data = await response.json();
+            setUser(data.username);
+        } catch (error) {
+            return { error: error.message }
         }
-
-        const data = await response.json();
-        setUser(data.username);
     };
 
     function getCookie(name) {

@@ -1,21 +1,36 @@
 import { useEffect } from 'react'
 import { useEmulator } from '../context/emulator.context'
+import { useGamepad } from '../hooks/useGamepad';
 import { PlayIcon, PauseIcon, ArrowUpTrayIcon, BoltIcon } from '@heroicons/react/24/outline';
 
 const Emulator = () => {
     const {
         emulator,
         canvasRef,
-        speed,
-        handleSpeed,
-        volume,
-        handleVolume,
+        speed, handleSpeed,
+        volume, handleVolume,
         handleRomLoad,
         toggleEmulation,
-        status,
-        isRunning,
-        setIsRunning
+        status, isRunning, setIsRunning
     } = useEmulator();
+
+    useGamepad({
+        onPress: name => {
+            if (name === 'rt') {
+                handleSpeed(speed + 4);
+            } else if (name === 'lt') {
+                handleSpeed(speed - 4);
+            } else if (name === 'ls') {
+                emulator.quickReload();
+            } else {
+                emulator.buttonPress(name);
+            }
+        },
+
+        onRelease: name => {
+            emulator.buttonUnpress(name);
+        }
+    });
 
     useEffect(() => {
         if (emulator?.romLoaded && !isRunning) {
@@ -101,7 +116,7 @@ const Emulator = () => {
                             <BoltIcon className="h-5 w-5 text-amber-400" />
                             <input
                                 type="range"
-                                onChange={handleSpeed}
+                                onChange={e => handleSpeed(Number(e.target.value))}
                                 onMouseUp={(e) => e.target.blur()}
                                 onKeyUp={(e) => e.target.blur()}
                                 min="1"

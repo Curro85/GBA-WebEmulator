@@ -1,6 +1,6 @@
 import { useAuth } from "../context/auth.context";
 import { useState } from "react";
-import { ArrowRightIcon, ExclamationTriangleIcon, LockClosedIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { CircleUserRound, Lock, TriangleAlert } from "lucide-react";
 
 function LoginForm({ onSuccess, toRegister }) {
     const [username, setUsername] = useState('');
@@ -38,7 +38,7 @@ function LoginForm({ onSuccess, toRegister }) {
 
             {error && (
                 <div className="mb-6 p-3 flex items-center bg-red-900/50 border border-red-500 rounded-md text-red-200">
-                    <ExclamationTriangleIcon className="h-5 w-5 mr-2" />
+                    <TriangleAlert className="h-5 w-5 mr-2" />
                     {error}
                 </div>
             )}
@@ -46,7 +46,7 @@ function LoginForm({ onSuccess, toRegister }) {
             <div className="space-y-6">
                 <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <UserCircleIcon className="h-5 w-5 text-cyan-500" />
+                        <CircleUserRound className="h-5 w-5 text-cyan-500" />
                     </div>
                     <input
                         type="text"
@@ -60,7 +60,7 @@ function LoginForm({ onSuccess, toRegister }) {
 
                 <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <LockClosedIcon className="h-5 w-5 text-cyan-500" />
+                        <Lock className="h-5 w-5 text-cyan-500" />
                     </div>
                     <input
                         type="password"
@@ -90,8 +90,7 @@ function LoginForm({ onSuccess, toRegister }) {
                         </>
                     ) : (
                         <>
-                            <ArrowRightIcon className="h-5 w-5 mr-2" />
-                            Entrar
+                            Iniciar sesión
                         </>
                     )}
                 </button>

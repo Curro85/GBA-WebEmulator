@@ -1,6 +1,5 @@
 // import { useEmulator } from '../context/emulator.context';
-import { ArrowRightStartOnRectangleIcon, Cog6ToothIcon, PlayIcon, SpeakerWaveIcon, BoltIcon } from '@heroicons/react/24/outline';
-import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
+import { CloudUpload, DoorOpen, Play, Settings, Volume2, Zap } from 'lucide-react';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
 
@@ -27,7 +26,7 @@ function Navbar() {
           onClick={() => openModal('uploadrom')}
         >
           <div className="p-1.5 rounded-md bg-purple-600/20 group-hover:bg-purple-600/30 transition-colors">
-            <CloudArrowUpIcon className="h-5 w-5 text-purple-400" />
+            <CloudUpload className='h-5 w-5 text-purple-400' />
           </div>
           <span className="text-gray-200 group-hover:text-white">Guardar ROMs</span>
         </button>
@@ -37,7 +36,7 @@ function Navbar() {
           onClick={() => openModal('loadroms')}
         >
           <div className="p-1.5 rounded-md bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
-            <PlayIcon className="h-5 w-5 text-blue-400" />
+            <Play className="h-5 w-5 text-blue-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">Mis ROMs</span>
         </button>
@@ -46,7 +45,7 @@ function Navbar() {
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
         >
           <div className="p-1.5 rounded-md bg-amber-600/20 group-hover:bg-amber-600/30 transition-colors">
-            <BoltIcon className="h-5 w-5 text-amber-400" />
+            <Zap className="h-5 w-5 text-amber-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">Velocidad</span>
         </button>
@@ -55,7 +54,7 @@ function Navbar() {
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
         >
           <div className="p-1.5 rounded-md bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
-            <SpeakerWaveIcon className="h-5 w-5 text-green-400" />
+            <Volume2 className="h-5 w-5 text-green-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">Soniquete</span>
         </button>
@@ -65,7 +64,7 @@ function Navbar() {
           onClick={() => openModal('settings')}
         >
           <div className="p-1.5 rounded-md bg-gray-600/20 group-hover:bg-gray-600/30 transition-colors">
-            <Cog6ToothIcon className="h-5 w-5 text-gray-400" />
+            <Settings className="h-5 w-5 text-gray-400" />
           </div>
           <span className="text-gray-200 group-hover:text-white">Configuración</span>
         </button>
@@ -86,7 +85,7 @@ function Navbar() {
               className="p-1.5 rounded-md hover:bg-gray-700/50 transition-colors text-gray-400 hover:text-red-400"
               title="Cerrar sesión"
             >
-              <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
+              <DoorOpen className="h-5 w-5" />
             </button>
           </div>
         ) : (

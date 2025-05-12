@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useEmulator } from '../context/emulator.context';
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useEmulator } from "./emulator.context";
 
 const buttonMap = {
     0: 'a', 1: 'b', 2: 'x', 3: 'y',
@@ -9,15 +9,29 @@ const buttonMap = {
     12: 'up', 13: 'down', 14: 'left', 15: 'right',
 };
 
-export function useGamepad({ onPress, onRelease }) {
-    const { emulator } = useEmulator();
+const GamepadContext = createContext();
+
+export const GamepadProvider = ({ children }) => {
+    const { emulator, handleSpeed, speed } = useEmulator();
+    const [isGamepadConnected, setIsGamepadConnected] = useState(false);
     const prevRef = useRef([]);
     const animationFrameRef = useRef(0);
-    const onPressRef = useRef(onPress);
-    const onReleaseRef = useRef(onRelease);
 
-    useEffect(() => { onPressRef.current = onPress }, [onPress]);
-    useEffect(() => { onReleaseRef.current = onRelease }, [onRelease])
+    const handlePress = (name) => {
+        if (name === 'rt') {
+            handleSpeed(speed + 1);
+        } else if (name === 'lt') {
+            handleSpeed(speed - 1);
+        } else if (name === 'ls') {
+            emulator.quickReload();
+        } else {
+            emulator.buttonPress(name);
+        }
+    };
+
+    const handleRelease = (name) => {
+        emulator.buttonUnpress(name);
+    };
 
     useEffect(() => {
         if (!emulator) return;
@@ -32,8 +46,8 @@ export function useGamepad({ onPress, onRelease }) {
                     const last = prevRef.current[index];
                     const now = btn.pressed;
 
-                    if (now && !last) onPress(name);
-                    if (!now && last) onRelease(name);
+                    if (now && !last) handlePress(name);
+                    if (!now && last) handleRelease(name);
 
                     prevRef.current[index] = now;
                 });
@@ -43,9 +57,13 @@ export function useGamepad({ onPress, onRelease }) {
 
         const handleConnect = e => {
             prevRef.current = Array(e.gamepad.buttons.length).fill(false);
+            setIsGamepadConnected(true);
             loop();
         };
-        const handleDisconnect = () => cancelAnimationFrame(animationFrameRef.current);
+        const handleDisconnect = () => {
+            cancelAnimationFrame(animationFrameRef.current);
+            setIsGamepadConnected(false);
+        }
 
         window.addEventListener('gamepadconnected', handleConnect);
         window.addEventListener('gamepaddisconnected', handleDisconnect);
@@ -55,6 +73,17 @@ export function useGamepad({ onPress, onRelease }) {
             window.removeEventListener('gamepaddisconnected', handleDisconnect);
             cancelAnimationFrame(animationFrameRef.current);
         };
-    }, [emulator]);
-}
 
+    }, [emulator]);
+
+    return (
+        <GamepadContext.Provider value={{ isGamepadConnected }}>
+            {children}
+        </GamepadContext.Provider>
+    )
+
+};
+
+export const useGamepad = () => {
+    return useContext(GamepadContext);
+}

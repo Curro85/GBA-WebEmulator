@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { useEmulator } from '../context/emulator.context'
-import { useGamepad } from '../hooks/useGamepad';
-import { PlayIcon, PauseIcon, ArrowUpTrayIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { Pause, Play, Upload, Volume2, Zap } from 'lucide-react';
 
 const Emulator = () => {
     const {
@@ -13,24 +12,6 @@ const Emulator = () => {
         toggleEmulation,
         status, isRunning, setIsRunning
     } = useEmulator();
-
-    useGamepad({
-        onPress: name => {
-            if (name === 'rt') {
-                handleSpeed(speed + 4);
-            } else if (name === 'lt') {
-                handleSpeed(speed - 4);
-            } else if (name === 'ls') {
-                emulator.quickReload();
-            } else {
-                emulator.buttonPress(name);
-            }
-        },
-
-        onRelease: name => {
-            emulator.buttonUnpress(name);
-        }
-    });
 
     useEffect(() => {
         if (emulator?.romLoaded && !isRunning) {
@@ -79,7 +60,7 @@ const Emulator = () => {
                     <div className="flex flex-wrap items-center justify-center gap-4">
                         {/* Botón Cargar ROM */}
                         <label className="cursor-pointer flex items-center space-x-2 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-4 py-2 rounded-lg transition-all duration-200 shadow hover:shadow-purple-500/30">
-                            <ArrowUpTrayIcon className="h-5 w-5" />
+                            <Upload className="h-5 w-5" />
                             <span>Cargar ROM</span>
                             <input
                                 type="file"
@@ -100,12 +81,12 @@ const Emulator = () => {
                         >
                             {isRunning ? (
                                 <>
-                                    <PauseIcon className="h-5 w-5" />
+                                    <Pause className="h-5 w-5" />
                                     <span>Pausar</span>
                                 </>
                             ) : (
                                 <>
-                                    <PlayIcon className="h-5 w-5" />
+                                    <Play className="h-5 w-5" />
                                     <span>Jugar</span>
                                 </>
                             )}
@@ -113,7 +94,7 @@ const Emulator = () => {
 
                         {/* Control de velocidad */}
                         <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
-                            <BoltIcon className="h-5 w-5 text-amber-400" />
+                            <Zap className="h-5 w-5 text-amber-400" />
                             <input
                                 type="range"
                                 onChange={e => handleSpeed(Number(e.target.value))}
@@ -132,6 +113,7 @@ const Emulator = () => {
 
                         {/* Control de volumen */}
                         <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
+                            <Volume2 className='h-5 w-5 text-green-400' />
                             <input
                                 type="range"
                                 onChange={handleVolume}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
-import { ArrowPathIcon, CloudArrowUpIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { CloudDownload, RefreshCw, Save, TriangleAlert } from 'lucide-react';
 
 function UserRoms({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -130,20 +130,20 @@ function UserRoms({ onSuccess }) {
                     onClick={loadRoms}
                     title="Recargar lista"
                 >
-                    <ArrowPathIcon className="h-5 w-5" />
+                    <RefreshCw className="h-5 w-5" />
                 </button>
             </div>
 
             {error && (
                 <div className="mb-6 p-3 flex items-center bg-red-900/50 border border-red-500 rounded-md text-red-200">
-                    <ExclamationTriangleIcon className="h-5 w-5 mr-2" />
+                    <TriangleAlert className="h-5 w-5 mr-2" />
                     {error}
                 </div>
             )}
 
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-8">
-                    <ArrowPathIcon className="h-12 w-12 text-purple-500 animate-spin mb-4" />
+                    <RefreshCw className="h-12 w-12 text-purple-500 animate-spin mb-4" />
                     <p className="text-gray-400 animate-pulse">
                         Cargando tus ROMs<span className="animate-bounce">...</span>
                     </p>
@@ -164,7 +164,7 @@ function UserRoms({ onSuccess }) {
                                                 {rom.name.replace(/\.[^/.]+$/, "")}
                                             </span>
                                             <span className="text-purple-400 ml-2">
-                                                <CloudArrowUpIcon className="h-4 w-4" />
+                                                <CloudDownload className="h-4 w-4" />
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center mt-1">
@@ -179,7 +179,7 @@ function UserRoms({ onSuccess }) {
                                         {expandedRom === rom.hash && (
                                             <div className="mt-3 ml-4 border-l-2 border-purple-500 pl-3">
                                                 <h4 className="text-sm text-purple-400 mb-2 flex items-center">
-                                                    {/* <SaveIcon className="h-4 w-4 mr-2" /> */}
+                                                    <Save className="h-4 w-4 mr-2" />
                                                     Partidas guardadas
                                                 </h4>
                                                 {loadingSaves[rom.hash] ? (

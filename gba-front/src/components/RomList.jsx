@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
 import { useAuth } from "../context/auth.context";
-import { ArrowPathIcon, CloudArrowUpIcon, CheckCircleIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { CircleCheckBig, CloudUpload, RefreshCw, TriangleAlert } from "lucide-react";
 
 function RomList({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -97,20 +97,20 @@ function RomList({ onSuccess }) {
                     className="p-1 text-gray-400 hover:text-white transition-colors"
                     title="Refresh list"
                 >
-                    <ArrowPathIcon className="h-5 w-5" />
+                    <RefreshCw className="h-5 w-5" />
                 </button>
             </div>
 
             {error && (
                 <div className="mb-6 p-3 flex items-center bg-red-900/50 border border-red-500 rounded-md text-red-200">
-                    <ExclamationTriangleIcon className="h-5 w-5 mr-2" />
+                    <TriangleAlert className="h-5 w-5 mr-2" />
                     {error}
                 </div>
             )}
 
             {success ? (
                 <div className="flex flex-col items-center justify-center py-8">
-                    <CheckCircleIcon className="h-16 w-16 text-green-500 mb-4" />
+                    <CircleCheckBig className="h-16 w-16 text-green-500 mb-4" />
                     <p className="text-xl text-white font-medium">ROMs subidas correctamente!</p>
                 </div>
             ) : (
@@ -163,12 +163,12 @@ function RomList({ onSuccess }) {
                     >
                         {isLoading ? (
                             <>
-                                <ArrowPathIcon className="h-5 w-5 mr-2 animate-spin" />
+                                <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
                                 Uploading...
                             </>
                         ) : (
                             <>
-                                <CloudArrowUpIcon className="h-5 w-5 mr-2" />
+                                <CloudUpload className="h-5 w-5 mr-2" />
                                 Upload {selectedRoms.length > 0 ? `(${selectedRoms.length})` : ''}
                             </>
                         )}

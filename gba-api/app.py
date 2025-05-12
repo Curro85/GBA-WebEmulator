@@ -7,7 +7,6 @@ from flask import Flask, jsonify, request, send_file
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
     get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from models import db, User, Profile, Rom, Save
 from config import Config
@@ -136,7 +135,6 @@ def uploadroms():
     if include_saves and rom_ids:
         for save in saves:
             base_save_name = os.path.splitext(save.filename)[0]
-
             matching_roms = [name for name in rom_ids if name.startswith(base_save_name)]
 
             if matching_roms:

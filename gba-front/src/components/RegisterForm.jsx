@@ -1,10 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "../context/auth.context";
-import {
-    ExclamationTriangleIcon,
-    LockClosedIcon,
-    UserCircleIcon,
-} from "@heroicons/react/24/outline";
 import { CircleUserRound, Lock, TriangleAlert } from "lucide-react";
 
 

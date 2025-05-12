@@ -55,7 +55,6 @@ export const EmulatorProvider = ({ children }) => {
     const getSaveData = async (save) => {
         try {
             const saveData = emulator.FS.readFile(`/data/saves/${save}`);
-
             return new Blob([saveData], { type: 'application/octet-stream' });
         } catch (error) {
             console.log('Error leyendo datos de guardado:', error);

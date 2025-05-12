@@ -88,14 +88,14 @@ function RomList({ onSuccess }) {
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-white">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-                        Upload ROMs
+                        Subir ROMs
                     </span>
                 </h2>
                 <button
                     type="button"
                     onClick={getLocalRoms}
                     className="p-1 text-gray-400 hover:text-white transition-colors"
-                    title="Refresh list"
+                    title="Recargar lista"
                 >
                     <RefreshCw className="h-5 w-5" />
                 </button>
@@ -164,12 +164,12 @@ function RomList({ onSuccess }) {
                         {isLoading ? (
                             <>
                                 <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
-                                Uploading...
+                                Subiendo...
                             </>
                         ) : (
                             <>
                                 <CloudUpload className="h-5 w-5 mr-2" />
-                                Upload {selectedRoms.length > 0 ? `(${selectedRoms.length})` : ''}
+                                Subir {selectedRoms.length > 0 ? `(${selectedRoms.length})` : ''}
                             </>
                         )}
                     </button>

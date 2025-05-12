@@ -126,7 +126,7 @@ function UserRoms({ onSuccess }) {
                 </h2>
                 <button
                     type="button"
-                    className="p-1 text-gray-400 hover:text-purple-500 transition-colors"
+                    className="p-1 text-gray-400 hover:text-white transition-colors"
                     onClick={loadRoms}
                     title="Recargar lista"
                 >

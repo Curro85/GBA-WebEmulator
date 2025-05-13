@@ -1,7 +1,21 @@
 services:
+  db:
+    image: postgres:17
+    container_name: gba-db
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - gba-db-data:/var/lib/postgresql/data
+
   gba-api:
     build: ./gba-api
     container_name: gba-api
+    env_file:
+      - gba-api/.env
+    depends_on:
+      - db
     ports:
       - "5000:5000"
     volumes:
@@ -21,3 +35,6 @@ services:
     depends_on:
       - gba-api
       - gba-front
+
+volumes:
+  gba-db-data:

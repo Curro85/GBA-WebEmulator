@@ -4,6 +4,7 @@ from pathlib import Path, PurePath
 import traceback
 
 from flask import Flask, jsonify, request, send_file
+from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
     get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,12 +17,12 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 jwt = JWTManager(app)
 CORS(app, supports_credentials=True)
 
 with app.app_context():
     os.makedirs(app.config['ROM_FOLDER'], exist_ok=True)
-    db.create_all()
 
 
 @app.route('/api/register', methods=['POST'])
@@ -114,8 +115,8 @@ def uploadroms():
             continue
 
         rom_name = rom.filename
-        file_path = os.path.join(user_directory, rom_name)
-        rom_path = os.path.join(str(user.id), rom_name)
+        file_path = os.path.join(user_directory, 'roms', rom_name)
+        rom_path = os.path.join(str(user.id), 'roms', rom_name)
 
         with open(file_path, 'wb') as f:
             f.write(rom_data)

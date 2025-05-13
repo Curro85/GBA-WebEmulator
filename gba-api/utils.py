@@ -11,6 +11,7 @@ def create_user_directories(user_id):
     base_dir = Config.ROM_FOLDER
     dirs = [
         os.path.join(base_dir, str(user_id)),
+        os.path.join(base_dir, str(user_id), 'roms'),
         os.path.join(base_dir, str(user_id), 'saves'),
     ]
 

@@ -1,8 +1,9 @@
 import os
+import uuid
 import hashlib
-from pathlib import Path, PurePath
+import datetime
 import traceback
-
+from pathlib import Path, PurePath
 from flask import Flask, jsonify, request, send_file
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
@@ -136,17 +137,22 @@ def uploadroms():
     if include_saves and rom_ids:
         for save in saves:
             base_save_name = os.path.splitext(save.filename)[0]
+            save_extension = os.path.splitext(save.filename)[1]
             matching_roms = [name for name in rom_ids if name.startswith(base_save_name)]
 
             if matching_roms:
                 rom_name = matching_roms[0]
                 rom_id = rom_ids[rom_name]
 
+                timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+                unique_id = str(uuid.uuid4())[:8]
                 save_data = save.read()
                 save_size = len(save_data)
                 save_name = save.filename
-                file_save_path = os.path.join(user_directory, 'saves', save_name)
-                save_path = os.path.join(str(user.id), 'saves', save_name)
+                unique_save_name = f'{base_save_name}_{timestamp}_{unique_id}{save_extension}'
+                print(unique_save_name)
+                file_save_path = os.path.join(user_directory, 'saves', unique_save_name)
+                save_path = os.path.join(str(user.id), 'saves', unique_save_name)
 
                 with open(file_save_path, 'wb') as f:
                     f.write(save_data)
@@ -247,8 +253,8 @@ def loadsave(save_id):
     try:
         if not save.path.startswith(str(user.id)):
             return jsonify({'error': 'Acceso denegado'}), 403
-
-        safe_path = os.path.join(app.config['ROM_FOLDER'], save.path)
+        relative = PurePath(save.path)
+        safe_path = Path(app.config['ROM_FOLDER']) / relative
         if not os.path.isfile(safe_path):
             return jsonify({'error': 'Archivo de partida no encontrado'}), 404
 

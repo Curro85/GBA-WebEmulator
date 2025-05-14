@@ -155,6 +155,7 @@ export const EmulatorProvider = ({ children }) => {
             handleRomLoad,
             isRunning,
             status,
+            setStatus,
             toggleEmulation,
             setIsRunning
         }}>

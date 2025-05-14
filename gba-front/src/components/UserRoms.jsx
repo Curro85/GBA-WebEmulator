@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
-import { CloudDownload, RefreshCw, Save, TriangleAlert } from 'lucide-react';
+import { CloudDownload, Play, RefreshCw, Save, TriangleAlert } from 'lucide-react';
 
 function UserRoms({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -9,7 +9,7 @@ function UserRoms({ onSuccess }) {
     const [expandedRom, setExpandedRom] = useState(null);
     const [saves, setSaves] = useState({});
     const [loadingSaves, setLoadingSaves] = useState({});
-    const { emulator } = useEmulator();
+    const { emulator, setIsRunning, setStatus } = useEmulator();
 
     useEffect(() => {
         loadRoms();
@@ -61,7 +61,6 @@ function UserRoms({ onSuccess }) {
             const response = await fetch(`http://localhost:5000/api/loadrom/${rom.hash}`, {
                 credentials: 'include',
             });
-            console.log(response);
 
             if (!response.ok) {
                 throw new Error('Error cargando ROM');
@@ -86,9 +85,16 @@ function UserRoms({ onSuccess }) {
                     type: 'application/octet-stream',
                 })
 
+                const savePath = `/data/saves/${saveFile.name}`;
+                safeUnlink(savePath);
+
                 await emulator.uploadSaveOrSaveState(saveFile, () => {
                     emulator.FSSync();
                 })
+            } else {
+                const romName = romFile.name.split('.')[0]
+                const romSavePath = `data/saves/${romName}.sav`;
+                safeUnlink(romSavePath);
             }
 
             await emulator.uploadRom(romFile, () => {
@@ -96,7 +102,8 @@ function UserRoms({ onSuccess }) {
                 emulator.quitGame();
                 emulator.toggleInput(true);
                 emulator.loadGame(`/data/games/${romFile.name}`);
-
+                setIsRunning(true);
+                setStatus('Jugando...');
             });
 
             onSuccess();
@@ -105,6 +112,13 @@ function UserRoms({ onSuccess }) {
             console.log(error.message);
         }
 
+    };
+
+    const safeUnlink = (path) => {
+        const exists = emulator.FS.analyzePath(path).exists;
+        if (exists) {
+            emulator.FS.unlink(path);
+        }
     };
 
     const toggleRom = async (rom) => {
@@ -188,6 +202,15 @@ function UserRoms({ onSuccess }) {
                                                     </div>
                                                 ) : (
                                                     <ul className="space-y-2">
+                                                        <li
+                                                            className="p-2 bg-gray-700 rounded hover:bg-purple-800/30 flex justify-between items-center transition-colors"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleSelect(rom);
+                                                            }}>
+                                                            <span className="text-xs text-gray-200">Empezar partida nueva</span>
+                                                            <Play className="h-4.5 w-4.5 text-gray-200" />
+                                                        </li>
                                                         {saves[rom.hash]?.map((save) => (
                                                             <li
                                                                 key={save.id}
@@ -195,8 +218,7 @@ function UserRoms({ onSuccess }) {
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     handleSelect(rom, save);
-                                                                }}
-                                                            >
+                                                                }}>
                                                                 <span className="text-xs text-gray-200">
                                                                     {new Date(
                                                                         save.upload_date
@@ -209,14 +231,7 @@ function UserRoms({ onSuccess }) {
                                                             </li>
                                                         ))}
                                                         {saves[rom.hash]?.length === 0 && (
-                                                            <li className="text-xs text-gray-400 p-2"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleSelect(rom);
-                                                                }}>
-                                                                No hay partidas guardadas
-                                                                <p> Pulse aquí para empezar una</p>
-                                                            </li>
+                                                            <li className="text-xs text-gray-400 p-2">No hay partidas guardadas</li>
                                                         )}
                                                     </ul>
                                                 )}

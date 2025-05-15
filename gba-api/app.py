@@ -1,13 +1,13 @@
 import os
 import uuid
 import hashlib
-import datetime
 import traceback
+from datetime import datetime, timedelta
 from pathlib import Path, PurePath
 from flask import Flask, jsonify, request, send_file
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
-    get_jwt_identity
+    get_jwt_identity, get_jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 from models import db, User, Profile, Rom, Save
@@ -24,6 +24,20 @@ CORS(app, supports_credentials=True)
 
 with app.app_context():
     os.makedirs(app.config['ROM_FOLDER'], exist_ok=True)
+
+
+@app.after_request
+def refresh_jwt(response):
+    try:
+        exp_timestamp_jwt = get_jwt()['exp']
+        now = datetime.now()
+        refresh_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if refresh_timestamp > exp_timestamp_jwt:
+            access_token = create_access_token(identity=get_jwt_identity())
+            set_access_cookies(response, access_token)
+        return response
+    except (RuntimeError, KeyError):
+        return response
 
 
 @app.route('/api/register', methods=['POST'])
@@ -144,7 +158,7 @@ def uploadroms():
                 rom_name = matching_roms[0]
                 rom_id = rom_ids[rom_name]
 
-                timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 unique_id = str(uuid.uuid4())[:8]
                 save_data = save.read()
                 save_size = len(save_data)

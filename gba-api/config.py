@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +11,7 @@ class Config:
     JWT_COOKIE_HTTPONLY = True
     JWT_COOKIE_SECURE = False  # Cambiar para producción
     JWT_COOKIE_SAMESITE = 'Lax'
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     # JWT_COOKIE_DOMAIN = '.tudominio.com' dominio para produccion
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

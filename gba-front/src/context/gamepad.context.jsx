@@ -12,16 +12,16 @@ const buttonMap = {
 const GamepadContext = createContext();
 
 export const GamepadProvider = ({ children }) => {
-    const { emulator, handleSpeed, speed } = useEmulator();
+    const { emulator, handleSpeed, speedRef } = useEmulator();
     const [isGamepadConnected, setIsGamepadConnected] = useState(false);
     const prevRef = useRef([]);
     const animationFrameRef = useRef(0);
 
     const handlePress = (name) => {
         if (name === 'rt') {
-            handleSpeed(speed + 1);
+            handleSpeed(speedRef.current + 1);
         } else if (name === 'lt') {
-            handleSpeed(speed - 1);
+            handleSpeed(speedRef.current - 1);
         } else if (name === 'ls') {
             emulator.quickReload();
         } else {
@@ -55,22 +55,22 @@ export const GamepadProvider = ({ children }) => {
             animationFrameRef.current = requestAnimationFrame(loop);
         };
 
-        const handleConnect = e => {
+        const onConnect = e => {
             prevRef.current = Array(e.gamepad.buttons.length).fill(false);
             setIsGamepadConnected(true);
             loop();
         };
-        const handleDisconnect = () => {
+        const onDisconnect = () => {
             cancelAnimationFrame(animationFrameRef.current);
             setIsGamepadConnected(false);
         }
 
-        window.addEventListener('gamepadconnected', handleConnect);
-        window.addEventListener('gamepaddisconnected', handleDisconnect);
+        window.addEventListener('gamepadconnected', onConnect);
+        window.addEventListener('gamepaddisconnected', onDisconnect);
 
         return () => {
-            window.removeEventListener('gamepadconnected', handleConnect);
-            window.removeEventListener('gamepaddisconnected', handleDisconnect);
+            window.removeEventListener('gamepadconnected', onConnect);
+            window.removeEventListener('gamepaddisconnected', onDisconnect);
             cancelAnimationFrame(animationFrameRef.current);
         };
 

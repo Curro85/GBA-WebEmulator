@@ -142,11 +142,18 @@ export const EmulatorProvider = ({ children }) => {
         emulator.setVolume(inputVolume / 100);
     }
 
+    const speedRef = useRef(speed);
+
+    useEffect(() => {
+        speedRef.current = speed;
+    }, [speed]);
+
     return (
         <EmulatorContext.Provider value={{
             emulator,
             canvasRef,
             speed,
+            speedRef,
             handleSpeed,
             volume,
             handleVolume,

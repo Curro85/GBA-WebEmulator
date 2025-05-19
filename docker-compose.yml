@@ -19,17 +19,21 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./gba-api/uploads/roms:/app/uploads/roms
+      - ./gba-api/uploads/users:/app/uploads/users
 
   gba-front:
     build: ./gba-front
     container_name: gba-front
+    env_file:
+      - gba-front/.env
     ports:
       - "3001:80"
 
   nginx:
     build: ./nginx
     container_name: nginx
+    env_file:
+      - .env
     ports:
       - "8080:80"
     depends_on:

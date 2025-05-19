@@ -10,7 +10,10 @@ const ModalContext = createContext();
 export const ModalProvider = ({ children }) => {
     const [modal, setModal] = useState({ type: null, props: {} });
 
-    const openModal = (type, props = {}) => setModal({ type, props });
+    const openModal = (type, props = {}) => {
+        setModal({ type: null, props: {} });
+        setTimeout(() => setModal({ type, props }), 10);
+    };
     const closeModal = () => setModal({ type: null, props: {} });
 
     const renderModal = () => {
@@ -18,8 +21,16 @@ export const ModalProvider = ({ children }) => {
             isOpen: modal.type !== null,
             onRequestClose: closeModal,
             closeTimeoutMS: 300,
-            overlayClassName: 'fixed inset-0 bg-black/50 flex items-center justify-center',
-            className: 'bg-gray-900 rounded-lg max-w-md w-full mx-auto shadow-xl',
+            overlayClassName: {
+                base: "fixed inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm opacity-0 transition-opacity duration-300",
+                afterOpen: "opacity-100",
+                beforeClose: "opacity-0"
+            },
+            className: {
+                base: "bg-gray-900 rounded-lg max-w-md w-full mx-auto shadow-xl transform transition-all duration-300 ease-out opacity-0 scale-95",
+                afterOpen: "opacity-100 scale-100",
+                beforeClose: "opacity-0 scale-90"
+            },
             ariaHideApp: false,
             ...modal.props.modalOptions
         };

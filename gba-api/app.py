@@ -12,6 +12,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 from models import db, User, Profile, Rom, Save
 from config import Config
+from flasgger import Swagger
 from utils import allowed_file, create_user_directories
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
+swagger = Swagger(app)
 CORS(app, supports_credentials=True)
 
 with app.app_context():
@@ -28,6 +30,15 @@ with app.app_context():
 
 @app.after_request
 def refresh_jwt(response):
+    """
+    Actualiza el JWT si está cerca de expirar
+    ---
+    tags:
+      - Autenticación
+    responses:
+      200:
+        description: JWT refrescado exitosamente
+    """
     try:
         exp_timestamp_jwt = get_jwt()['exp']
         now = datetime.now()
@@ -42,6 +53,39 @@ def refresh_jwt(response):
 
 @app.route('/api/register', methods=['POST'])
 def register():
+    """
+    Registra un nuevo usuario
+    ---
+    tags:
+      - Usuarios
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: Register
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              description: Nombre de usuario
+            password:
+              type: string
+              description: Contraseña
+    responses:
+      200:
+        description: Usuario registrado exitosamente
+        schema:
+          properties:
+            msg:
+              type: string
+      400:
+        description: Error en datos enviados o usuario ya existe
+      500:
+        description: Error interno del servidor
+    """
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -68,6 +112,39 @@ def register():
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    """
+    Login de usuario
+    ---
+    tags:
+      - Autenticación
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: Login
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              description: Nombre de usuario
+            password:
+              type: string
+              description: Contraseña
+    responses:
+      200:
+        description: Login exitoso
+        schema:
+          properties:
+            msg:
+              type: string
+      401:
+        description: Credenciales incorrectas
+      500:
+        description: Error interno del servidor
+    """
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
     password = data.get('password')
@@ -83,6 +160,15 @@ def login():
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
+    """
+    Cierre de sesión de usuario
+    ---
+    tags:
+      - Autenticación
+    responses:
+      200:
+        description: Logout exitoso
+    """
     response = jsonify({'msg': 'Logout exitoso'})
     unset_jwt_cookies(response)
     return response, 200
@@ -91,6 +177,21 @@ def logout():
 @app.route('/api/profile', methods=['GET'])
 @jwt_required()
 def profile():
+    """
+    Obtiene el perfil del usuario autenticado
+    ---
+    tags:
+      - Usuarios
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Perfil del usuario
+        schema:
+          properties:
+            username:
+              type: string
+    """
     username = get_jwt_identity()
     return jsonify({'username': username}), 200
 
@@ -98,6 +199,41 @@ def profile():
 @app.route('/api/uploadroms', methods=['POST'])
 @jwt_required()
 def uploadroms():
+    """
+    Subida de ROMs y partidas guardadas asociadas
+    ---
+    tags:
+      - ROMs
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: include_saves
+        in: formData
+        type: boolean
+        description: Incluir partidas guardadas
+      - name: roms
+        in: formData
+        type: file
+        required: true
+        description: Archivos ROM (.gba, .zip, etc.)
+      - name: saves
+        in: formData
+        type: file
+        description: Archivos de partidas guardadas
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: ROMs subidos exitosamente
+        schema:
+          properties:
+            msg:
+              type: string
+      400:
+        description: Error en la subida de archivos
+      500:
+        description: Error interno del servidor
+    """
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     include_saves = request.form.get('include_saves', 'false') == 'true'
@@ -193,6 +329,31 @@ def uploadroms():
 @app.route('/api/loadroms', methods=['GET'])
 @jwt_required()
 def loadroms():
+    """
+    Lista de ROMs subidas por el usuario
+    ---
+    tags:
+      - ROMs
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Lista de ROMs
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              hash:
+                type: string
+              size:
+                type: integer
+              upload_date:
+                type: string
+                format: date-time
+    """
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     roms = Rom.query.filter_by(user_id=user.id).all()
@@ -207,6 +368,29 @@ def loadroms():
 @app.route('/api/loadrom/<string:rom_hash>', methods=['GET'])
 @jwt_required()
 def loadrom(rom_hash):
+    """
+    Inserta una ROM específica por hash al emulador
+    ---
+    tags:
+      - ROMs
+    parameters:
+      - name: rom_hash
+        in: path
+        type: string
+        required: true
+        description: Hash de la ROM
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Archivo ROM enviado
+      403:
+        description: Acceso denegado
+      404:
+        description: ROM no encontrada
+      500:
+        description: Error interno del servidor
+    """
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
@@ -238,6 +422,39 @@ def loadrom(rom_hash):
 @app.route('/api/loadsaves/<string:rom_hash>', methods=['GET'])
 @jwt_required()
 def loadsaves(rom_hash):
+    """
+    Lista de últimas partidas guardadas para una ROM
+    ---
+    tags:
+      - Datos de Guardado
+    parameters:
+      - name: rom_hash
+        in: path
+        type: string
+        required: true
+        description: Hash de la ROM
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Lista de partidas guardadas
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              size:
+                type: integer
+              upload_date:
+                type: string
+                format: date-time
+      404:
+        description: ROM no encontrada
+    """
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
@@ -257,6 +474,29 @@ def loadsaves(rom_hash):
 @app.route('/api/loadsave/<int:save_id>', methods=['GET'])
 @jwt_required()
 def loadsave(save_id):
+    """
+    Inserta una partida guardada por ID al emulador
+    ---
+    tags:
+      - Datos de Guardado
+    parameters:
+      - name: save_id
+        in: path
+        type: integer
+        required: true
+        description: ID de la partida guardada
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Archivo de partida enviado
+      403:
+        description: Acceso denegado
+      404:
+        description: Partida no encontrada
+      500:
+        description: Error interno del servidor
+    """
     username = get_jwt_identity()
     user = User.query.filter_by(username=username).first()
     save = Save.query.filter_by(id=save_id, user_id=user.id).first()
@@ -284,4 +524,3 @@ def loadsave(save_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # app.run(host='0.0.0.0', debug=True, port=5000)

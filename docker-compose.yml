@@ -30,10 +30,9 @@ services:
       - "3001:80"
 
   nginx:
-    build: ./nginx
-    container_name: nginx
-    env_file:
-      - .env
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
     depends_on:

@@ -19,7 +19,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./gba-api/uploads/users:/app/uploads/users
+      - user-data:/app/uploads/users
 
   gba-front:
     build: ./gba-front
@@ -41,3 +41,4 @@ services:
 
 volumes:
   gba-db-data:
+  user-data:

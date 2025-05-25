@@ -522,5 +522,5 @@ def loadsave(save_id):
         return jsonify({'error': 'Hubo un error inesperado'}), 500
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)

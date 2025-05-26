@@ -1,5 +1,5 @@
 // import { useEmulator } from '../context/emulator.context';
-import { CloudUpload, DoorOpen, Play, Settings, Volume2, Zap } from 'lucide-react';
+import { CloudUpload, DoorOpen, Play, Settings, User } from 'lucide-react';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
 
@@ -43,20 +43,12 @@ function Navbar() {
 
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
-        >
-          <div className="p-1.5 rounded-md bg-amber-600/20 group-hover:bg-amber-600/30 transition-colors">
-            <Zap className="h-5 w-5 text-amber-400" />
-          </div>
-          <span className="text-gray-200 group-hover:text-white">Velocidad</span>
-        </button>
-
-        <button
-          className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
+          onClick={() => openModal('profile')}
         >
           <div className="p-1.5 rounded-md bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
-            <Volume2 className="h-5 w-5 text-green-400" />
+            <User className="h-5 w-5 text-green-400" />
           </div>
-          <span className="text-gray-200 group-hover:text-white">Soniquete</span>
+          <span className="text-gray-200 group-hover:text-white">Perfil</span>
         </button>
 
         <button

@@ -174,11 +174,11 @@ def logout():
     return response, 200
 
 
-@app.route('/api/profile', methods=['GET'])
+@app.route('/api/user', methods=['GET'])
 @jwt_required()
-def profile():
+def user():
     """
-    Obtiene el perfil del usuario autenticado
+    Obtiene el usuario autenticado para mantener su sesión
     ---
     tags:
       - Usuarios

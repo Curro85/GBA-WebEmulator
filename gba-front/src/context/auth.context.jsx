@@ -6,12 +6,12 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        profile();
+        getUser();
     }, []);
 
-    const profile = async () => {
+    const getUser = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/profile', {
+            const response = await fetch('http://localhost:5000/api/user', {
                 credentials: 'include',
             });
 
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(dataError.error || 'Error al iniciar sesión');
             }
 
-            profile();
+            getUser();
 
             return { success: true };
 

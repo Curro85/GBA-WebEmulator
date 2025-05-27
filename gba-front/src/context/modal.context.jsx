@@ -5,6 +5,7 @@ import RomList from '../components/RomList';
 import RegisterForm from "../components/RegisterForm";
 import UserRoms from "../components/UserRoms";
 import Profile from "../components/Profile";
+import Settings from "../components/Settings";
 
 const ModalContext = createContext();
 
@@ -87,15 +88,7 @@ export const ModalProvider = ({ children }) => {
             case 'settings':
                 return (
                     <Modal {...common}>
-                        <div>
-                            Controles:
-                            Z - B
-                            X - A
-                            A - L
-                            S - R
-                            Enter - Start
-                            Space - Select
-                        </div>
+                        <Settings />
                     </Modal>
                 )
 

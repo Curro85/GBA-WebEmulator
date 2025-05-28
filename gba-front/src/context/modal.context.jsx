@@ -81,14 +81,14 @@ export const ModalProvider = ({ children }) => {
             case 'profile':
                 return (
                     <Modal {...common}>
-                        <Profile />
+                        <Profile onSuccess={closeModal} />
                     </Modal>
                 )
 
             case 'settings':
                 return (
                     <Modal {...common}>
-                        <Settings />
+                        <Settings onSuccess={closeModal} />
                     </Modal>
                 )
 

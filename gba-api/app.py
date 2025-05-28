@@ -99,6 +99,10 @@ def register():
         hashed_password = generate_password_hash(password)
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
+        db.session.flush()
+
+        new_profile = Profile(user_id=new_user.id, name='', bio='', image='')
+        db.session.add(new_profile)
         db.session.commit()
 
         access_token = create_access_token(identity=new_user.username)
@@ -186,7 +190,7 @@ def user():
       - cookieAuth: []
     responses:
       200:
-        description: Perfil del usuario
+        description: Usuario
         schema:
           properties:
             username:
@@ -194,6 +198,90 @@ def user():
     """
     username = get_jwt_identity()
     return jsonify({'username': username}), 200
+
+
+@app.route('/api/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    """
+    Obtiene el perfil del usuario para mostrar sus datos
+    ---
+    tags:
+      - Usuarios
+    security:
+      - cookieAuth: []
+    responses:
+      200:
+        description: Perfil del usuario
+        schema:
+          properties:
+            name:
+              type: string
+            bio:
+              type: string
+            image:
+              type: string
+    """
+    try:
+        username = get_jwt_identity()
+        user = User.query.filter_by(username=username).first()
+
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'Usuario no encontrado'
+            }), 404
+
+        if not user.profile:
+            return jsonify({
+                'success': False,
+                'message': 'Perfil no encontrado. Debes crear un perfil primero.'
+            }), 404
+
+        total_roms = len(user.roms)
+        total_saves = sum(len(rom.saves) for rom in user.roms)
+        total_storage_used = sum(rom.size for rom in user.roms)
+
+        recent_roms = sorted(
+            user.roms,
+            key=lambda x: x.upload_date,
+            reverse=True
+        )[:3]
+
+        recent_roms_data = [{
+            'name': rom.name,
+            'upload_date': rom.upload_date.isoformat() if rom.upload_date else None
+        } for rom in recent_roms]
+
+        response_data = {
+            'success': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'register_date': user.register_date.isoformat() if user.register_date else None
+            },
+            'profile': {
+                'id': user.profile.id,
+                'name': user.profile.name,
+                'bio': user.profile.bio,
+                'image': user.profile.image
+            },
+            'stats': {
+                'total_roms': total_roms,
+                'total_saves': total_saves,
+                'total_storage_used': total_storage_used,
+                'recent_roms': recent_roms_data
+            }
+        }
+
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': 'Error interno del servidor',
+            'error': str(e) if app.debug else None
+        }), 500
 
 
 @app.route('/api/uploadroms', methods=['POST'])
@@ -256,11 +344,13 @@ def uploadroms():
 
         rom_data = rom.read()
         rom_size = len(rom_data)
-        if rom_size < (32 * 1024) or rom_size > (32 * 1024 * 1024):  # De 32 kilobytes a 32 megabytes
+        # De 32 kilobytes a 32 megabytes
+        if rom_size < (32 * 1024) or rom_size > (32 * 1024 * 1024):
             continue
 
         rom_hash = hashlib.sha256(rom_data).hexdigest()
-        existing_rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+        existing_rom = Rom.query.filter_by(
+            hash=rom_hash, user_id=user.id).first()
         if existing_rom:
             rom_ids[existing_rom.name] = existing_rom.id
             continue
@@ -272,7 +362,8 @@ def uploadroms():
         with open(file_path, 'wb') as f:
             f.write(rom_data)
 
-        new_rom = Rom(name=rom_name, hash=rom_hash, size=rom_size, path=rom_path, user_id=user.id)
+        new_rom = Rom(name=rom_name, hash=rom_hash,
+                      size=rom_size, path=rom_path, user_id=user.id)
         db.session.add(new_rom)
         new_roms.append(new_rom)
 
@@ -288,7 +379,8 @@ def uploadroms():
         for save in saves:
             base_save_name = os.path.splitext(save.filename)[0]
             save_extension = os.path.splitext(save.filename)[1]
-            matching_roms = [name for name in rom_ids if name.startswith(base_save_name)]
+            matching_roms = [
+                name for name in rom_ids if name.startswith(base_save_name)]
 
             if matching_roms:
                 rom_name = matching_roms[0]
@@ -301,8 +393,10 @@ def uploadroms():
                 save_name = save.filename
                 unique_save_name = f'{base_save_name}_{timestamp}_{unique_id}{save_extension}'
                 print(unique_save_name)
-                file_save_path = os.path.join(user_directory, 'saves', unique_save_name)
-                save_path = os.path.join(str(user.id), 'saves', unique_save_name)
+                file_save_path = os.path.join(
+                    user_directory, 'saves', unique_save_name)
+                save_path = os.path.join(
+                    str(user.id), 'saves', unique_save_name)
 
                 with open(file_save_path, 'wb') as f:
                     f.write(save_data)
@@ -462,7 +556,8 @@ def loadsaves(rom_hash):
     if not rom:
         return jsonify({'error': 'ROM no encontrada'}), 404
 
-    saves = Save.query.filter_by(rom_id=rom.id).order_by(Save.upload_date.desc()).limit(3).all()
+    saves = Save.query.filter_by(rom_id=rom.id).order_by(
+        Save.upload_date.desc()).limit(3).all()
     return jsonify([{
         'id': save.id,
         'name': save.name,
@@ -522,5 +617,5 @@ def loadsave(save_id):
         return jsonify({'error': 'Hubo un error inesperado'}), 500
 
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

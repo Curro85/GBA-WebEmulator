@@ -16,8 +16,7 @@ function Settings({ onSuccess }) {
                         <X size={20} />
                     </button>
                 </div>
-
-                {/* Contenido */}
+                
                 <div className="p-6">
                     <div className="space-y-6">
                         <div className="text-center">
@@ -38,11 +37,11 @@ function Settings({ onSuccess }) {
                                     <Info size={14} />
                                     Usa las teclas mostradas para jugar
                                 </p>
-                                <div className="grid grid-cols-2 gap-4 text-left max-w-md mx-auto mt-4">
+                                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mt-4">
                                     <div className="space-y-1">
-                                        <p><span className="bg-gray-700 px-2 py-1 rounded text-xs">←↑→↓</span> Cruceta</p>
                                         <p><span className="bg-gray-700 px-2 py-1 rounded text-xs">Z</span> Botón A</p>
                                         <p><span className="bg-gray-700 px-2 py-1 rounded text-xs">X</span> Botón B</p>
+                                        <p><span className="bg-gray-700 px-2 py-1 rounded text-xs">←↑→↓</span> Cruceta</p>
                                     </div>
                                     <div className="space-y-1">
                                         <p><span className="bg-gray-700 px-2 py-1 rounded text-xs">A</span> Botón L</p>
@@ -53,12 +52,10 @@ function Settings({ onSuccess }) {
                             </div>
                         </div>
 
-                        {/* Botón de cerrar */}
                         <div className="flex justify-end pt-4 border-t border-gray-700">
                             <button
                                 onClick={onSuccess}
-                                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors"
-                            >
+                                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors">
                                 Cerrar
                             </button>
                         </div>

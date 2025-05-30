@@ -18,7 +18,7 @@ function UserRoms({ onSuccess }) {
     const loadRoms = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/loadroms', {
+            const response = await fetch('/api/loadroms', {
                 credentials: 'include'
             });
 
@@ -39,7 +39,7 @@ function UserRoms({ onSuccess }) {
         setLoadingSaves((prev) => ({ ...prev, [romHash]: true }));
         try {
             const response = await fetch(
-                `http://localhost:5000/api/loadsaves/${romHash}`,
+                `/api/loadsaves/${romHash}`,
                 {
                     credentials: "include",
                 }
@@ -58,7 +58,7 @@ function UserRoms({ onSuccess }) {
 
     const handleSelect = async (rom, save) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/loadrom/${rom.hash}`, {
+            const response = await fetch(`/api/loadrom/${rom.hash}`, {
                 credentials: 'include',
             });
 
@@ -72,7 +72,7 @@ function UserRoms({ onSuccess }) {
             });
 
             if (save) {
-                const saveResponse = await fetch(`http://localhost:5000/api/loadsave/${save.id}`, {
+                const saveResponse = await fetch(`/api/loadsave/${save.id}`, {
                     credentials: 'include',
                 });
 

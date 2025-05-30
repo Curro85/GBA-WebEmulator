@@ -35,7 +35,7 @@ function Profile({ onSuccess }) {
 
     const fetchProfileData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/profile', {
+            const response = await fetch('/api/profile', {
                 credentials: 'include',
             });
 
@@ -55,7 +55,7 @@ function Profile({ onSuccess }) {
 
     const fetchRoms = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/loadroms', {
+            const response = await fetch('/api/loadroms', {
                 credentials: 'include',
             });
 

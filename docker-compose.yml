@@ -12,7 +12,7 @@ services:
       - gba-db-data:/var/lib/postgresql/data
 
   gba-api:
-    image: curro85/gba-api
+    image: ${API_IMAGE}
     container_name: gba-api
     environment:
       - DB_URL=${DB_URL}
@@ -25,7 +25,7 @@ services:
       - user-data:/app/uploads/users
 
   gba-front:
-    image: curro85/gba-front
+    image: ${FRONT_IMAGE}
     container_name: gba-front
     ports:
       - "3001:80"

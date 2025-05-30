@@ -56,7 +56,7 @@ function RomList({ onSuccess }) {
             formData.append('include_saves', includeSaves);
 
 
-            const response = await fetch('http://localhost:5000/api/uploadroms', {
+            const response = await fetch('/api/uploadroms', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

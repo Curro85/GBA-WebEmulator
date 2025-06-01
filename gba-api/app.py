@@ -14,6 +14,8 @@ from models import db, User, Profile, Rom, Save
 from config import Config
 from flasgger import Swagger, swag_from
 from validators import validate_password
+from google import genai
+from google.genai import types
 from utils import allowed_file, create_user_directories
 
 app = Flask(__name__)
@@ -23,6 +25,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
 swagger = Swagger(app)
+client = genai.Client(api_key=app.config['GEMINI_API_KEY'])
 CORS(app, supports_credentials=True)
 
 with app.app_context():
@@ -44,6 +47,22 @@ def refresh_jwt(response):
         return response
     except (RuntimeError, KeyError):
         return response
+
+
+@app.route('/gemini', methods=['POST'])
+def gemini():
+    data = request.get_json()
+    content = data.get('content')
+
+    response = client.models.generate_content(
+        model='gemini-2.0-flash',
+        config=types.GenerateContentConfig(
+            system_instruction='Eres un señor mayor que le gustan los videojuegos y entiendes mucho sobre ellos'
+        ),
+        contents=[str(content)]
+    )
+
+    return jsonify({'response': response.text})
 
 
 @app.route('/api/register', methods=['POST'])

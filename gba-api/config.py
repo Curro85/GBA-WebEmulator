@@ -16,3 +16,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ROM_FOLDER = os.path.join(os.getcwd(), 'uploads', 'users')
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')

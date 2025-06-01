@@ -1,0 +1,6 @@
+summary: Cierre de sesión de usuario
+tags:
+  - Autenticación
+responses:
+  200:
+    description: Logout exitoso

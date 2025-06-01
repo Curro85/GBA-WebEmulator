@@ -1,0 +1,32 @@
+summary: Subida de ROMs y partidas guardadas asociadas
+tags:
+  - ROMs
+consumes:
+  - multipart/form-data
+parameters:
+  - name: include_saves
+    in: formData
+    type: boolean
+    description: Incluir partidas guardadas
+  - name: roms
+    in: formData
+    type: file
+    required: true
+    description: Archivos ROM (.gba, .zip, etc.)
+  - name: saves
+    in: formData
+    type: file
+    description: Archivos de partidas guardadas
+security:
+  - cookieAuth: []
+responses:
+  200:
+    description: ROMs subidos exitosamente
+    schema:
+      properties:
+        msg:
+          type: string
+  400:
+    description: Error en la subida de archivos
+  500:
+    description: Error interno del servidor

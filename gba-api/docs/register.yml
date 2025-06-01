@@ -1,0 +1,30 @@
+summary: Registrar un nuevo usuario
+tags:
+  - Usuarios
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      id: Register
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nombre de usuario
+        password:
+          type: string
+          description: Contraseña
+responses:
+  200:
+    description: Usuario registrado exitosamente
+    schema:
+      properties:
+        msg:
+          type: string
+  400:
+    description: Error en datos enviados o usuario ya existe
+  500:
+    description: Error interno del servidor

@@ -1,0 +1,22 @@
+summary: Lista de ROMs subidas por el usuario
+tags:
+  - ROMs
+security:
+  - cookieAuth: []
+responses:
+  200:
+    description: Lista de ROMs
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          hash:
+            type: string
+          size:
+            type: integer
+          upload_date:
+            type: string
+            format: date-time

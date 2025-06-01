@@ -1,0 +1,16 @@
+summary: Obtiene el perfil del usuario para mostrar sus datos
+tags:
+  - Usuarios
+security:
+  - cookieAuth: []
+responses:
+  200:
+    description: Perfil del usuario
+    schema:
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        image:
+          type: string

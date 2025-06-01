@@ -1,0 +1,12 @@
+summary: Obtiene el usuario autenticado para mantener su sesión
+tags:
+  - Usuarios
+security:
+  - cookieAuth: []
+responses:
+  200:
+    description: Usuario
+    schema:
+      properties:
+        username:
+          type: string

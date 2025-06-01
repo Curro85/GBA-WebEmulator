@@ -1,0 +1,20 @@
+summary: Inserta una ROM específica por hash al emulador
+tags:
+  - ROMs
+parameters:
+  - name: rom_hash
+    in: path
+    type: string
+    required: true
+    description: Hash de la ROM
+security:
+  - cookieAuth: []
+responses:
+  200:
+    description: Archivo ROM enviado
+  403:
+    description: Acceso denegado
+  404:
+    description: ROM no encontrada
+  500:
+    description: Error interno del servidor

@@ -6,17 +6,28 @@ import RegisterForm from "../components/RegisterForm";
 import UserRoms from "../components/UserRoms";
 import Profile from "../components/Profile";
 import Settings from "../components/Settings";
+import { useEmulator } from "./emulator.context";
 
 const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
     const [modal, setModal] = useState({ type: null, props: {} });
+    const { emulator } = useEmulator();
 
     const openModal = (type, props = {}) => {
+        // if (isRunning) {
+        //     emulator.pauseGame();
+        //     setIsRunning(false);
+        //     setStatus('Pausado');
+        // }
+        emulator.toggleInput(false)
         setModal({ type: null, props: {} });
         setTimeout(() => setModal({ type, props }), 10);
     };
-    const closeModal = () => setModal({ type: null, props: {} });
+    const closeModal = () => {
+        emulator.toggleInput(true);
+        setModal({ type: null, props: {} })
+    };
 
     const renderModal = () => {
         const common = {

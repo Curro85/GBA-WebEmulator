@@ -24,6 +24,8 @@ export const GamepadProvider = ({ children }) => {
             handleSpeed(speedRef.current - 1);
         } else if (name === 'ls') {
             emulator.quickReload();
+        } else if (name === 'rs') {
+            emulator.pauseGame();
         } else {
             emulator.buttonPress(name);
         }

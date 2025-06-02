@@ -3,7 +3,6 @@ import { Send, User, Loader, Sparkles, X } from 'lucide-react'
 import { useEmulator } from "../context/emulator.context";
 
 function Gemini() {
-    const [response, setResponse] = useState('');
     const [content, setContent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [conversation, setConversation] = useState([]);
@@ -36,7 +35,6 @@ function Gemini() {
             const text = await result.json();
 
             setConversation([...newConversation, { type: 'ai', content: text.response }]);
-            setResponse(text.response);
         } catch (error) {
             console.error('Error:', error);
             setConversation([...newConversation, { type: 'ai', content: 'Error: No se pudo obtener respuesta de la IA.' }]);
@@ -54,7 +52,6 @@ function Gemini() {
 
     const clearConversation = () => {
         setConversation([]);
-        setResponse('');
     }
 
     return (

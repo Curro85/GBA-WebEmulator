@@ -21,7 +21,7 @@ function Gemini() {
         setConversation(newConversation);
 
         try {
-            const result = await fetch('http://localhost:5000/gemini', {
+            const result = await fetch('/gemini', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

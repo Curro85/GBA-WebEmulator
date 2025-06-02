@@ -17,6 +17,7 @@ services:
     environment:
       - DB_URL=${DB_URL}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     depends_on:
       - db
     ports:

@@ -53,16 +53,35 @@ def refresh_jwt(response):
 def gemini():
     data = request.get_json()
     content = data.get('content')
+    history = data.get('history', [])
 
-    response = client.models.generate_content(
-        model='gemini-2.0-flash',
-        config=types.GenerateContentConfig(
-            system_instruction='Eres un señor mayor que le gustan los videojuegos y entiendes mucho sobre ellos'
-        ),
-        contents=[str(content)]
-    )
+    contents = []
 
-    return jsonify({'response': response.text})
+    if history:
+        for msg in history:
+            contents.append({
+                'role': 'user' if msg['type'] == 'user' else 'model',
+                'parts': [{'text': msg['content']}]
+            })
+
+    contents.append({
+        'role': 'user',
+        'parts': [{'text': content}]
+    })
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            config=types.GenerateContentConfig(
+                system_instruction='Eres un señor mayor que le gustan los videojuegos y entiendes mucho sobre ellos'
+            ),
+            contents=contents
+        )
+
+        return jsonify({'response': response.text})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/register', methods=['POST'])
@@ -243,8 +262,13 @@ def uploadroms():
         with open(file_path, 'wb') as f:
             f.write(rom_data)
 
-        new_rom = Rom(name=rom_name, hash=rom_hash,
-                      size=rom_size, path=rom_path, user_id=user.id)
+        new_rom = Rom(
+            name=rom_name,
+            hash=rom_hash,
+            size=rom_size,
+            path=rom_path,
+            user_id=user.id
+        )
         db.session.add(new_rom)
         new_roms.append(new_rom)
 

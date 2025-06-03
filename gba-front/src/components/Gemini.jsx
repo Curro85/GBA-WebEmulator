@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Send, User, Loader, Sparkles, X } from 'lucide-react'
 import { useEmulator } from "../context/emulator.context";
+import ReactMarkdown from 'react-markdown';
 
 function Gemini() {
     const [content, setContent] = useState('');
@@ -65,7 +66,6 @@ function Gemini() {
                 </button>
             )}
 
-            {/* Panel lateral del chat */}
             <div className={`fixed inset-y-0 right-0 z-50 w-156 bg-gray-800/95 backdrop-blur-sm border-l border-purple-500/30 shadow-xl shadow-purple-500/10 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}>
 
@@ -76,7 +76,7 @@ function Gemini() {
                         </div>
                         <div>
                             <h3 className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-                                Jeremias
+                                Jeremías
                             </h3>
                             <p className="text-xs text-gray-400">Experto en jueguitos.</p>
                         </div>
@@ -102,7 +102,6 @@ function Gemini() {
                     </div>
                 </div>
 
-                {/* Área de mensajes */}
                 <div className="flex-1 h-[calc(100vh-140px)] overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
                     {conversation.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
@@ -112,7 +111,7 @@ function Gemini() {
                             <div>
                                 <h4 className="font-semibold text-gray-200 mb-2">¡Hola!</h4>
                                 <p className="text-gray-400 text-sm max-w-xs">
-                                    Soy Jeremias, tu ayudante para videojuegos. ¿En qué puedo ayudarte?
+                                    Soy Jeremías, tu ayudante para videojuegos. ¿En qué puedo ayudarte?
                                 </p>
                             </div>
                         </div>
@@ -134,9 +133,9 @@ function Gemini() {
                                         ? 'bg-gradient-to-br from-cyan-600/20 to-blue-700/20 border border-cyan-500/30'
                                         : 'bg-gray-700/50 border border-gray-600'
                                         }`}>
-                                        <p className="leading-relaxed whitespace-pre-wrap text-white">
-                                            {message.content}
-                                        </p>
+                                        <div className="leading-relaxed whitespace-pre-wrap text-white">
+                                            <ReactMarkdown>{message.content}</ReactMarkdown>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

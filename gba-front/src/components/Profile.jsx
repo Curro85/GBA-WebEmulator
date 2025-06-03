@@ -25,7 +25,6 @@ function Profile({ onSuccess }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch profile data
     useEffect(() => {
         if (user) {
             fetchProfileData();
@@ -88,7 +87,7 @@ function Profile({ onSuccess }) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="relative max-w-2xl w-full mx-4 bg-gray-900 rounded-xl border border-purple-500 shadow-lg shadow-purple-500/20 overflow-hidden">
-                {/* Barra superior */}
+
                 <div className="handle flex justify-between items-center bg-gray-800 px-4 py-3 border-b border-purple-500">
                     <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 flex items-center gap-2">
                         <User size={24} className="text-purple-400" />
@@ -101,11 +100,9 @@ function Profile({ onSuccess }) {
                     </button>
                 </div>
 
-                {/* Contenido */}
                 <div className="p-6">
                     {user ? (
                         <div className="space-y-6">
-                            {/* Pestañas */}
                             <div className="flex border-b border-gray-700">
                                 <button
                                     className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${activeTab === 'profile' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-gray-300'}`}
@@ -130,7 +127,6 @@ function Profile({ onSuccess }) {
                                 </button>
                             </div>
 
-                            {/* Contenido de pestañas */}
                             <div className="min-h-[300px]">
                                 {loading ? (
                                     <div className="flex justify-center items-center py-12">
@@ -153,7 +149,6 @@ function Profile({ onSuccess }) {
                                             <div className="space-y-6">
                                                 {profileData?.profile ? (
                                                     <>
-                                                        {/* Info del perfil */}
                                                         <div className="flex items-start space-x-4">
                                                             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-pink-600 flex items-center justify-center text-2xl font-bold text-white">
                                                                 {profileData.profile.name ? profileData.profile.name.charAt(0).toUpperCase() : user.charAt(0).toUpperCase()}
@@ -169,7 +164,6 @@ function Profile({ onSuccess }) {
                                                             </div>
                                                         </div>
 
-                                                        {/* Estadísticas rápidas */}
                                                         <div className="grid grid-cols-3 gap-4">
                                                             <div className="bg-gray-800 rounded-lg p-3 text-center">
                                                                 <div className="text-2xl font-bold text-purple-400 flex items-center justify-center gap-1">
@@ -266,7 +260,6 @@ function Profile({ onSuccess }) {
                                                     Estadísticas de Juego
                                                 </h3>
 
-                                                {/* Estadísticas principales */}
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="bg-gradient-to-br from-purple-800 to-purple-900 rounded-lg p-4">
                                                         <div className="text-3xl font-bold text-white flex items-center gap-2">
@@ -284,7 +277,6 @@ function Profile({ onSuccess }) {
                                                     </div>
                                                 </div>
 
-                                                {/* Almacenamiento */}
                                                 <div className="bg-gray-800 rounded-lg p-4">
                                                     <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
                                                         <Database size={18} />
@@ -299,7 +291,6 @@ function Profile({ onSuccess }) {
                                                     </div>
                                                 </div>
 
-                                                {/* ROMs recientes */}
                                                 {profileData.stats?.recent_roms && profileData.stats.recent_roms.length > 0 && (
                                                     <div className="bg-gray-800 rounded-lg p-4">
                                                         <h4 className="font-semibold text-white mb-3 flex items-center gap-2">

@@ -4,18 +4,23 @@ import hashlib
 import traceback
 from datetime import datetime, timedelta
 from pathlib import Path, PurePath
+
 from flask import Flask, jsonify, request, send_file
 from flask_migrate import Migrate
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, set_access_cookies, unset_jwt_cookies, \
-    get_jwt_identity, get_jwt
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (
+    JWTManager, create_access_token,
+    jwt_required, set_access_cookies,
+    unset_jwt_cookies, get_jwt_identity, get_jwt
+)
 from flask_cors import CORS
-from models import db, User, Profile, Rom, Save
-from config import Config
+from werkzeug.security import generate_password_hash, check_password_hash
 from flasgger import Swagger, swag_from
-from validators import validate_password
 from google import genai
 from google.genai import types
+
+from models import db, User, Profile, Rom, Save
+from config import Config
+from validators import validate_password
 from utils import allowed_file, create_user_directories
 
 app = Flask(__name__)
@@ -370,6 +375,38 @@ def loadrom(rom_hash):
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': 'Error al cargar la ROM'}), 500
+
+
+@app.route('/api/deleterom/<string:rom_hash>', methods=['DELETE'])
+@jwt_required()
+@swag_from('docs/deleterom.yml')
+def deleterom(rom_hash):
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
+    rom = Rom.query.filter_by(hash=rom_hash, user_id=user.id).first()
+
+    if not rom:
+        return jsonify({'error': 'ROM no encontrada'}), 404
+
+    if not rom.path.startswith(str(user.id)):
+        return jsonify({'error': 'Acceso denegado'}), 403
+
+    try:
+        relative = PurePath(rom.path)
+        safe_path = Path(app.config['ROM_FOLDER']) / relative
+
+        if not os.path.isfile(safe_path):
+            return jsonify({'error': 'Error al eliminar la ROM'}), 500
+
+        os.remove(safe_path)
+        db.session.delete(rom)
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'No se ha podido eliminar la ROM'}), 500
+
+    return jsonify({'msg': 'ROM eliminada'}), 200
 
 
 @app.route('/api/loadsaves/<string:rom_hash>', methods=['GET'])

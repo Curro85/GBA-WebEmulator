@@ -42,6 +42,15 @@ const Emulator = () => {
                         className="absolute top-0 left-0 w-full h-full object-contain"
                     />
 
+                    {status === 'Esperando ROM...' && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none text-gray-400 space-y-2">
+                            <Upload className="h-10 w-10 opacity-70" />
+                            <p className="text-sm font-semibold">
+                                Arrastra una ROM aquí para jugar
+                            </p>
+                        </div>
+                    )}
+
                     {/* Efecto CRT */}
                     <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiNmZmYiPjwvcGF0aD4KPC9zdmc+')]"></div>
 

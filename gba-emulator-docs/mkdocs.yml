@@ -1,0 +1,35 @@
+site_name: GBA Web Emulator
+theme:
+  features:
+    - header.autohide
+  name: material
+  language: es
+  logo: assets/jeremias.png
+  font:
+    text: Roboto Mono
+  palette:
+    - scheme:
+      primary: purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+
+    - scheme:
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  icon:
+    repo: fontawesome/brands/github
+repo_url: https://github.com/Curro85/GBA-WebEmulator
+repo_name: curro85/GBA-WebEmulator
+nav:
+- Home: index.md
+- Introducción: introduccion.md
+- Arquitectura: arquitectura.md
+- Despliegue: despliegue.md
+- API: api.md
+- Juego: juego.md
+- Contacto: contacto.md

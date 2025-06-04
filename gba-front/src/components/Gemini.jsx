@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Send, User, Loader, Sparkles, X } from 'lucide-react'
 import { useEmulator } from "../context/emulator.context";
 import ReactMarkdown from 'react-markdown';
@@ -8,7 +8,31 @@ function Gemini() {
     const [isLoading, setIsLoading] = useState(false);
     const [conversation, setConversation] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const panelRef = useRef(null);
+    const textAreaRef = useRef(null);
     const { emulator } = useEmulator();
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (isOpen && panelRef.current && !panelRef.current.contains(e.target)) {
+                setIsOpen(false);
+                emulator.toggleInput(true);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen, emulator]);
+
+    useEffect(() => {
+        if (isOpen && textAreaRef.current) {
+            textAreaRef.current.focus();
+        }
+    }, [isOpen]);
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -66,8 +90,10 @@ function Gemini() {
                 </button>
             )}
 
-            <div className={`fixed inset-y-0 right-0 z-50 w-156 bg-gray-800/95 backdrop-blur-sm border-l border-purple-500/30 shadow-xl shadow-purple-500/10 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}>
+            <div
+                ref={panelRef}
+                className={`fixed inset-y-0 right-0 z-50 w-156 bg-gray-800/95 backdrop-blur-sm border-l border-purple-500/30 shadow-xl shadow-purple-500/10 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}>
 
                 <div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gray-800/80">
                     <div className="flex items-center space-x-3">
@@ -163,6 +189,7 @@ function Gemini() {
                     <form onSubmit={handleSubmit} className="space-y-2">
                         <div className="flex items-end space-x-2">
                             <textarea
+                                ref={textAreaRef}
                                 name="content"
                                 id="content"
                                 value={content}

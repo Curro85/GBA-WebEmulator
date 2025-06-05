@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEmulator } from "../context/emulator.context";
-import { CloudDownload, Play, RefreshCw, Save, TriangleAlert } from 'lucide-react';
+import { CloudDownload, Play, RefreshCw, Save, Trash2, TriangleAlert } from 'lucide-react';
 
 function UserRoms({ onSuccess }) {
     const [roms, setRoms] = useState([]);
@@ -114,6 +114,44 @@ function UserRoms({ onSuccess }) {
 
     };
 
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    const handleDeleteRom = async (romHash, romName) => {
+        const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar "${romName}"? Esta acción no se puede deshacer.`);
+        if (!confirmDelete) return;
+
+        try {
+            const csrfToken = getCookie('csrf_access_token');
+
+            const response = await fetch(`/api/deleterom/${romHash}`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                const { error } = await response.json();
+                alert(`Error al eliminar la ROM: ${error}`);
+                return;
+            }
+
+            setRoms(prev => prev.filter(rom => rom.hash !== romHash));
+            setExpandedRom(null);
+        } catch (error) {
+            console.error('Error eliminando la ROM:', error);
+            alert('Hubo un error inesperado al eliminar la ROM');
+        }
+    };
+
+
     const safeUnlink = (path) => {
         const exists = emulator.FS.analyzePath(path).exists;
         if (exists) {
@@ -177,9 +215,20 @@ function UserRoms({ onSuccess }) {
                                             <span className="text-gray-200 font-mono truncate text-sm">
                                                 {rom.name.replace(/\.[^/.]+$/, "")}
                                             </span>
-                                            <span className="text-purple-400 ml-2">
-                                                <CloudDownload className="h-4 w-4" />
-                                            </span>
+                                            <div className="flex items-center space-x-2">
+                                                <CloudDownload className="h-4 w-4 text-purple-400" />
+                                                <button
+                                                    className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteRom(rom.hash, rom.name);
+                                                    }}
+                                                    title="Eliminar ROM"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+
                                         </div>
                                         <div className="flex justify-between items-center mt-1">
                                             <span className="text-xs text-gray-400">

@@ -26,4 +26,4 @@ compartir su emulador compilado en WebAssembly y adaptado como componente en Rea
 ### Realizado por:
 *Alejandro Morillo Troya*
 
-### Enlace a la [documentación](curro85.github.io/GBA-WebEmulator) en github pages.
+### Enlace a la [documentación](https://curro85.github.io/GBA-WebEmulator/) en github pages.

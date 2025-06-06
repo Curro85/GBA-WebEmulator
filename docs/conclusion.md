@@ -48,11 +48,17 @@ que podría hacer al proyecto.
 ## Futuras mejoras
 
 > Como futuras mejoras al proyecto tengo las siguientes:
+> 
 > - Añadir controles para móviles y tablets.
-> - Añadir personalización de perfiles mas profunda y categoría de perfiles.
+> 
+> - Añadir personalización de perfiles y categoría de perfiles.
+> 
 > - Añadir temas al emulador, que cambién la interfaz según el tema seleccionado.
+> 
 > - Añadir soporte a juego multijugador.
+> 
 > - Rediseñar modales para que tengan efectos mas suaves.
+> 
 > - Mejorar los tiempos de subida y carga de ROMs.
 
 Para abacar te dejo una bibliografía en el siguiente apartado para que consultes

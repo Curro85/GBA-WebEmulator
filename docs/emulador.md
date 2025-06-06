@@ -7,7 +7,7 @@ a nuestros juegos favoritos.
 
 Lo primero que verás al entrar en la web, será una pantalla como esta
 
-![placeholder pantalla inicial]()
+![Interfaz](assets/interfaz.png)
 
 Como verás en la imagen hay varios indicadores numéricos:
 > 1.- Boton para cargar las ROMs desde el sistema

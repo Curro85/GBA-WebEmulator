@@ -66,7 +66,6 @@ export const EmulatorProvider = ({ children }) => {
         if (!emulator || !file) return;
 
         const fileExt = file.name.split('.').pop().toLowerCase();
-        console.log(fileExt);
 
         if (!allowedFiles.includes(fileExt)) {
             setStatus('Error: Formato no soportado');
@@ -81,28 +80,17 @@ export const EmulatorProvider = ({ children }) => {
 
             reader.onload = async (e) => {
                 const data = new Uint8Array(e.target.result);
-                console.log(data);
-                console.log(file);
 
-                // 1. Escribir el ROM en el sistema de archivos virtual
                 emulator.FS.writeFile(`/data/games/${file.name}`, data);
                 emulator.FSSync();
 
-                // 2. Cargar el ROM desde la ruta especificada
                 const loadResult = emulator.loadGame(`/data/games/${file.name}`);
 
                 if (loadResult) {
                     setStatus("Jugando...");
                     setIsRunning(true);
-                    console.log("ROM cargado correctamente", {
-                        romLoaded: true,
-                        fileList: emulator.listRoms(),
-                        saveList: emulator.listSaves(),
-                        save: emulator.getSave(),
-                    });
                 } else {
                     setStatus("Error: ROM no compatible");
-                    console.error("Error al cargar ROM");
                 }
             };
 

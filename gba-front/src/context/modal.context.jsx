@@ -15,11 +15,6 @@ export const ModalProvider = ({ children }) => {
     const { emulator } = useEmulator();
 
     const openModal = (type, props = {}) => {
-        // if (isRunning) {
-        //     emulator.pauseGame();
-        //     setIsRunning(false);
-        //     setStatus('Pausado');
-        // }
         emulator.toggleInput(false)
         setModal({ type: null, props: {} });
         setTimeout(() => setModal({ type, props }), 10);

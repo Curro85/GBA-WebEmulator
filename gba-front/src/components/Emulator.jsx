@@ -54,7 +54,6 @@ const Emulator = () => {
                     {/* Efecto CRT */}
                     <div className="absolute inset-0 pointer-events-none opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2U9IiNmZmYiPjwvcGF0aD4KPC9zdmc+')]"></div>
 
-                    {/* Estado del emulador */}
                     <div className={`absolute bottom-4 left-4 px-3 py-1 rounded-md text-sm font-medium ${status.includes('Error') ? 'bg-red-900/80 text-red-200' :
                         status.includes('Pausado') ? 'bg-amber-900/80 text-amber-200' :
                             status.includes('Jugando') ? 'bg-green-900/80 text-green-200' :
@@ -64,10 +63,8 @@ const Emulator = () => {
                     </div>
                 </div>
 
-                {/* Controles */}
                 <div className="bg-gray-800/80 backdrop-blur-sm p-4 rounded-xl border border-gray-700 shadow-lg">
                     <div className="flex flex-wrap items-center justify-center gap-4">
-                        {/* Botón Cargar ROM */}
                         <label className="cursor-pointer flex items-center space-x-2 bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-4 py-2 rounded-lg transition-all duration-200 shadow hover:shadow-purple-500/30">
                             <Upload className="h-5 w-5" />
                             <span>Cargar ROM</span>
@@ -80,7 +77,6 @@ const Emulator = () => {
                             />
                         </label>
 
-                        {/* Botón Play/Pause */}
                         <button
                             onClick={toggleEmulation}
                             className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-bold transition-all duration-200 shadow ${isRunning ?
@@ -101,7 +97,6 @@ const Emulator = () => {
                             )}
                         </button>
 
-                        {/* Control de velocidad */}
                         <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
                             <Zap className="h-5 w-5 text-amber-400" />
                             <input
@@ -120,7 +115,6 @@ const Emulator = () => {
                             </span>
                         </div>
 
-                        {/* Control de volumen */}
                         <div className="flex items-center space-x-3 bg-gray-700/50 px-4 py-2 rounded-lg border border-gray-600">
                             <Volume2 className='h-5 w-5 text-green-400' />
                             <input

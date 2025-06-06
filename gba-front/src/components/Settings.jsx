@@ -4,7 +4,6 @@ function Settings({ onSuccess }) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="relative max-w-2xl w-full mx-4 bg-gray-900 rounded-xl border border-purple-500 shadow-lg shadow-purple-500/20 overflow-hidden">
-                {/* Barra superior */}
                 <div className="handle flex justify-between items-center bg-gray-800 px-4 py-3 border-b border-purple-500">
                     <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 flex items-center gap-2">
                         <SettingsIcon size={24} className="text-purple-400" />
@@ -16,7 +15,7 @@ function Settings({ onSuccess }) {
                         <X size={20} />
                     </button>
                 </div>
-                
+
                 <div className="p-6">
                     <div className="space-y-6">
                         <div className="text-center">

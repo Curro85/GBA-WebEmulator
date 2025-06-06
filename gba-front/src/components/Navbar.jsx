@@ -1,10 +1,8 @@
-// import { useEmulator } from '../context/emulator.context';
 import { CloudUpload, DoorOpen, Play, Settings, User } from 'lucide-react';
 import { useAuth } from '../context/auth.context';
 import { useModal } from '../context/modal.context';
 
 function Navbar() {
-  // const { emulator } = useEmulator();
   const { openModal } = useModal();
   const { user, logout } = useAuth();
 
@@ -19,7 +17,6 @@ function Navbar() {
         </p>
       </div>
 
-      {/* Navbar */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         <button
           className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all group"
@@ -62,7 +59,6 @@ function Navbar() {
         </button>
       </nav>
 
-      {/* Usuario */}
       <div className="p-4 border-t border-purple-500/30">
         {user ? (
           <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">

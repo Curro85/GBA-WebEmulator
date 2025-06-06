@@ -78,5 +78,4 @@ selecciona la rom y selecciona si quieres iniciar una nueva partida o una partid
 
 ## ¡Hasta pronto!
 
-Hasta aquí la documentación, te dejo una bibliografía en el siguiente apartado para que consultes
-los recursos utilizados en este proyecto.
+Hasta aquí la documentación, en el siguiente apartado estan las conclusiones del proyecto.

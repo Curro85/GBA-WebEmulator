@@ -20,7 +20,6 @@ espero que os animéis a realizar un proyecto similar.
 
 [https://ai.google.dev/gemini-api/docs](https://ai.google.dev/gemini-api/docs?hl=es-419)
 
-
 [https://lucide.dev/guide/packages/lucide-react](https://lucide.dev/guide/packages/lucide-react)
 
 [https://github.com/flasgger/flasgger](https://github.com/flasgger/flasgger)

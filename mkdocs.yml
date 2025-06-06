@@ -1,0 +1,55 @@
+site_name: GBA Web Emulator
+site_url: https://curro85.github.io/GBA-WebEmulator
+repo_url: https://github.com/Curro85/GBA-WebEmulator
+repo_name: Curro85/GBA-WebEmulator
+
+theme:
+  name: material
+  language: es
+  logo: assets/jeremias.png
+  favicon: assets/gb.svg
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Roboto Mono
+  palette:
+    - media: "{prefers-color-scheme: light}"
+      scheme: default
+      primary: pink
+      accent: purple
+      toggle:
+        icon: material/lightbulb
+        name: Cambiar a modo oscuro
+
+    - media: "{prefers-color-scheme: dark}"
+      scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/lightbulb-outline
+        name: Cambiar a modo claro
+
+  features:
+    - navigation.top
+    - toc.integrate
+    - toc.follow
+    - search.suggest
+    - header.autohide
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+
+plugins:
+  - search:
+      lang: es
+
+nav:
+  - index.md
+  - introduccion.md
+  - gba-api.md
+  - gba-front.md
+  - emulador.md
+  - bibliografia.md
+

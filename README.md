@@ -26,6 +26,6 @@ compartir su emulador compilado en WebAssembly y adaptado como componente en Rea
 ### Enlace a la [documentación](https://curro85.github.io/GBA-WebEmulator/) en github pages.
 
 
-![Milhouse](presentacion/imagenes/milhouse-frisbee.gif)  
+![Milhouse](./docs/assets/gifs/milhouse-frisbee.gif)  
 *Desarrollando una emulador web para jugar al emulador.*  
 *Realizado por Alejandro Morillo Troya*

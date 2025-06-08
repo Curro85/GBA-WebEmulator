@@ -33,14 +33,14 @@ jobs:
       - name: Build and push API image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./gba-api
           push: true
           tags: ${{secrets.DOCKERHUB_USERNAME}}/gba-api
 
       - name: Build and push Front image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./gba-front
           push: true
           tags: ${{secrets.DOCKERHUB_USERNAME}}/gba-front
       

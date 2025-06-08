@@ -594,6 +594,7 @@ código y tener funciones que pueden reutilizarse.</p>
 <h2 id="modelos-de-base-de-datos-modelspy">Modelos de base de datos (<code>models.py</code>)</h2>
 <p>Aquí están los modelos usados en la aplicación con el ORM <code>SQLAlchemy</code>, he añadido índices a
 los campos más accedidos para así tener mayor velocidad en las peticiones.</p>
+<p><img alt="Entidad relación" src="../assets/erdb.png" /></p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="nb">id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">username</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

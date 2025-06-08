@@ -5,6 +5,7 @@ import { CloudDownload, Play, RefreshCw, Save, Trash2, TriangleAlert } from 'luc
 function UserRoms({ onSuccess }) {
     const [roms, setRoms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [expandedRom, setExpandedRom] = useState(null);
     const [saves, setSaves] = useState({});
@@ -57,12 +58,14 @@ function UserRoms({ onSuccess }) {
     };
 
     const handleSelect = async (rom, save) => {
+        setIsLoading(true)
         try {
             const response = await fetch(`/api/loadrom/${rom.hash}`, {
                 credentials: 'include',
             });
 
             if (!response.ok) {
+                setIsLoading(false)
                 throw new Error('Error cargando ROM');
             }
 
@@ -105,7 +108,7 @@ function UserRoms({ onSuccess }) {
                 setIsRunning(true);
                 setStatus('Jugando...');
             });
-
+            setIsLoading(false)
             onSuccess();
 
         } catch (error) {
@@ -243,7 +246,7 @@ function UserRoms({ onSuccess }) {
                                             <div className="mt-3 ml-4 border-l-2 border-purple-500 pl-3">
                                                 <h4 className="text-sm text-purple-400 mb-2 flex items-center">
                                                     <Save className="h-4 w-4 mr-2" />
-                                                    Partidas guardadas
+                                                    Partidas guardadas {isLoading && <RefreshCw className="h-4 w-4 ml-2 text-purple-400 animate-spin" />}
                                                 </h4>
                                                 {loadingSaves[rom.hash] ? (
                                                     <div className="text-gray-400 text-sm">

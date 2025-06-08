@@ -102,6 +102,8 @@ def validate_password(password):
 Aquí están los modelos usados en la aplicación con el ORM `SQLAlchemy`, he añadido índices a
 los campos más accedidos para así tener mayor velocidad en las peticiones.
 
+![Entidad relación](assets/erdb.png)
+
 ```python
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

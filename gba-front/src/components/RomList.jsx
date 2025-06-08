@@ -66,8 +66,7 @@ function RomList({ onSuccess }) {
             })
 
             if (!response.ok) {
-                const dataError = await response.json();
-                throw new Error(dataError.error || 'Inicia sesión para subir las ROMs');
+                throw new Error('Inicia sesión para subir las ROMs');
             }
 
             setSuccess(true);

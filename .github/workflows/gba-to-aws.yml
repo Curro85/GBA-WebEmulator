@@ -72,6 +72,6 @@ jobs:
             sleep 30
             docker compose down
             sleep 5
-            docker rmi ${{secrets.DOCKERHUB.USERNAME}}/gba-api ${{secrets.DOCKERHUB.USERNAME}}/gba-front
+            docker rmi ${{secrets.DOCKERHUB_USERNAME}}/gba-api ${{secrets.DOCKERHUB_USERNAME}}/gba-front
             sleep 5
             docker compose up -d nginx
